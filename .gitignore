@@ -1,0 +1,103 @@
+.svn
+*.anjuta
+*.anjuta*
+*.o
+*.Plo
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*~.nib
+.*.sw?
+*~
+.classpath
+.autotools
+.settings/
+.loadpath
+Makefile
+Makefile.in
+*.dll
+
+node_modules
+
+aclocal.m4
+autom4te.cache/
+compile
+depcomp
+.deps/
+.libs/
+install-sh
+libtool
+ltmain.sh
+missing
+.dirstamp
+*.lo
+*.la
+stamp-h1
+
+ui_*.h
+moc_*.cpp
+qrc_*.cpp
+
+libqabel-*.pc
+qabel-client/qabel-client
+lib/examples/json_read
+lib/examples/messages
+lib/examples/qbl
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# qt
+*.autosave
+*.pro.user
+*.pro.user*
+
+vim_*.sh
+
+#build dir
+build*/
+cmake*
+
+#unittest files
+*.unit
+
+# server
+drops_data.pkl
+
+#kdevelop
+*.kdev*
+*.kate-swp
+
+#cmakecache
+CMakeCache.txt
+
+#Python
+*.pyc
