@@ -35,7 +35,6 @@ Deploy with uWSGI and Nginx as frontend to
  - act as load balancers to several wsgi processes in order to scale
 """
 
-# TODO: agent to scan and cleanup stale drops
 # TODO: perhaps alternative in-memory and simple disk backends
 # TODO: load and performance monitoring
 # TODO: evaluate redis monitoring:
@@ -55,6 +54,7 @@ from Crypto import Random
 
 MESSAGES_PER_DROP_LIMIT = 10
 MESSAGE_SIZE_LIMIT = 1000  # Octets
+MESSAGE_EXPIRE_TIME = 60 * 60 * 24 * 7  # Seconds
 
 
 def create_boundary_id():
@@ -179,6 +179,8 @@ def handle_request(env, start_response):
         drops.lpush(drop_id, record)
         # truncate the list
         drops.ltrim(drop_id, 0, MESSAGES_PER_DROP_LIMIT)
+        # set expiration time
+        drops.expire(drop_id, MESSAGE_EXPIRE_TIME)
 
         start_response('200 OK', [('Content-Type', 'text/html')])
         return ["<b>OK</b>"]
