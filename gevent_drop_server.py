@@ -8,7 +8,7 @@ This software is licenced under the Qabel Public Licence
 gevent_drop_server.py: Test server for deaddrops protocol.
 Uses gevent and redis-py (hiredis is recommended).
 
-Just run this for a cheap example with build-in gevent server.
+Just run this for a cheap example with built-in gevent server.
 Enable the keyfile and certfile arguments (last few lines) to try TLS.
 Hint:
 $ openssl genrsa -out server.key 2048
