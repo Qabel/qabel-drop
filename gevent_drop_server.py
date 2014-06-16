@@ -190,7 +190,7 @@ if __name__ == '__main__':
     from gevent import pywsgi
 
     # change the bind as needed and maybe enable TLS
-    server = pywsgi.WSGIServer(('0.0.0.0', 6000),
+    server = pywsgi.WSGIServer(('127.0.0.1', 6000),
                                handle_request,
                                # keyfile='server.key',
                                # certfile='server.crt'
