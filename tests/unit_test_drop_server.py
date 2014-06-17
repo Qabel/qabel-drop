@@ -27,6 +27,10 @@ def test_check_drop_id():
     assert not check_drop_id('.bcdefghijklmnopqrstuvwxyzabcdefghijklmnopo')
     # non-identity encoding
     assert check_drop_id('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq')
+    # missing argument
+    assert not check_drop_id(None)
+    # incorrect padding
+    assert not check_drop_id('x')
 
 
 def test_decode_record():
@@ -64,11 +68,6 @@ def test_encode_record_nonnumber():
     encode_record('HEAD', 'TAIL')
 
 
-def test_send_multipart():
-    pass
-    #send_multipart(records, start_response):
-
-
 def test_read_postbody_form():
     env = {'CONTENT_TYPE': 'application/x-www-form-urlencoded'}
     env['wsgi.input'] = StringIO('BODY+DATA%3ATEXT')
@@ -96,6 +95,16 @@ def test_read_postbody_multipart():
     env['wsgi.input'] = StringIO(
         '--boundary\r\n' +
         'Content-Disposition: form-data; name="text"\r\n' +
+        'Content-Type: application/octet-stream\r\n' +
+        '\r\n' +
+        'BODY+DATA%3ATEXT' +
+        '\r\n' +
+        '--boundary--\r\n')
+    eq_(read_postbody(env), 'BODY+DATA%3ATEXT')
+
+    env['wsgi.input'] = StringIO(
+        '--boundary\r\n' +
+        'Content-Disposition: form-data; name="NOT_TEXT"\r\n' +
         'Content-Type: application/octet-stream\r\n' +
         '\r\n' +
         'BODY+DATA%3ATEXT' +

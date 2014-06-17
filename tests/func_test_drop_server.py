@@ -25,6 +25,18 @@ def test():
             status=404)
     app.head('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
              status=404)
+
+    # missing body
+    app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+             headers={'Content-Type': 'application/octet-stream'},
+             status=400)
+
+    # excessive body
+    app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+             params=1024 * 'x',
+             headers={'Content-Type': 'application/octet-stream'},
+             status=400)
+
     timestamp = time()
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
              params='a message',
@@ -52,6 +64,11 @@ def test():
                  headers={'If-Modified-Since':
                           formatdate(time() + 1, False, True)},
                  status=304)
+
+    r = app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+                headers={'If-Modified-Since':
+                         formatdate(time() + 1, False, True)},
+                status=304)
 
     r = app.head('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                  headers={'If-Modified-Since':
