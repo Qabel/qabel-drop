@@ -5,7 +5,7 @@ This software is licenced under the Qabel Public Licence
 (QaPL): https://qabel.de/qapl.txt
 
 
-drop_server.py: Test server for deaddrops protocol.
+drop_server.py: Test server for deaddrop protocol.
 Uses gevent and redis-py (hiredis is recommended).
 
 Just run this for a cheap example with built-in gevent server.
@@ -72,7 +72,7 @@ def check_drop_id(drop_id):
     try:
         return (len(drop_id) == 43
                 and not re.search(r'[^-_A-Za-z0-9]', drop_id)
-                and len(b64decode(drop_id + '===')) == 32)
+                and len(b64decode(drop_id + '=', '-_')) == 32)
     except TypeError:
         return False
 
