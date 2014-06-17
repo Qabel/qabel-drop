@@ -24,8 +24,8 @@ Tutorial from http://gunicorn.org/
  $ virtualenv ~/environments/drops/
  $ cd ~/environments/drops/
  $ source bin/activate
- (drops) $ pip install pycrypto redis hiredis gevent gunicorn
- (drops) $ cp GITDIR/samples/drop_server.py .
+ (drops) $ pip install -r GITDIR/requirements.txt
+ (drops) $ cp GITDIR/drop_server.py .
  (drops) $ ./bin/gunicorn -w 4 drop_server:app
 
 Deploy with uWSGI and Nginx as frontend to
@@ -37,11 +37,6 @@ Deploy with uWSGI and Nginx as frontend to
 
 # TODO: perhaps alternative in-memory and simple disk backends
 # TODO: load and performance monitoring
-# TODO: evaluate redis monitoring:
-# https://github.com/munin-monitoring/contrib/tree/master/plugins/redis
-# https://github.com/steelThread/redmon
-# https://github.com/nkrode/RedisLive
-# https://github.com/junegunn/redis-stat
 
 from __future__ import print_function
 import redis
