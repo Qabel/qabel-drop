@@ -50,6 +50,8 @@ from math import trunc
 from time import time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from base64 import b64encode, b64decode
+from urlparse import parse_qs
+from cgi import parse_header, parse_multipart
 from Crypto import Random
 
 MESSAGES_PER_DROP_LIMIT = 10
@@ -86,6 +88,7 @@ def decode_record(record):
 
 
 def encode_record(timestamp, message):
+    int(timestamp)  # raise on bad argument
     return '%s:%s' % (timestamp, message)
 
 
@@ -109,16 +112,39 @@ def send_multipart(records, start_response):
 
 
 def read_postbody(env):
-    if env['CONTENT_TYPE'] == 'application/x-www-form-urlencoded':
+    if not 'CONTENT_TYPE' in env:
+        # try to get a raw body anyway
         return env['wsgi.input'].read()
+
+    elif env['CONTENT_TYPE'] == 'application/x-www-form-urlencoded':
+        # decode and split the form
+        form = parse_qs(env['wsgi.input'].read())
+        if 'text' in form:
+            # return the last value for the 'text' key if available
+            return form['text'][-1]
+        elif len(form):
+            # otherwise use a random key
+            k, v = form.popitem()
+            return v[-1]
 
     elif env['CONTENT_TYPE'] == 'application/octet-stream':
         return env['wsgi.input'].read()
 
-    elif env['CONTENT_TYPE'] == 'multipart/form-data':
-        pass  # FIXME: test this
-        #postvars = cgi.parse_multipart(env['wsgi.input'], pdict)
-        #return postvars.get('file')[0]
+    elif env['CONTENT_TYPE'].startswith('multipart/form-data'):
+        # split the multipart
+        ctype, pdict = parse_header(env['CONTENT_TYPE'])
+        postvars = parse_multipart(env['wsgi.input'], pdict)
+        if 'text' in postvars:
+            # return the data for the 'text' part if available
+            return postvars['text'][-1]
+        elif len(postvars):
+            # otherwise use a random key
+            k, v = postvars.popitem()
+            return v[-1]
+
+    else:
+        # try to get a raw body anyway
+        return env['wsgi.input'].read()
 
 
 def handle_request(env, start_response):
