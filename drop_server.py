@@ -41,7 +41,6 @@ Deploy with uWSGI and Nginx as frontend to
 from __future__ import print_function
 import redis
 import re
-from math import trunc
 from time import time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from base64 import b64encode, b64decode
@@ -194,7 +193,7 @@ def app(env, start_response):
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
             return ['<h1>Bad REQUEST_METHOD</h1>']
 
-        now = trunc(time())
+        now = int(time())
         record = encode_record(now, message)
         # append the message
         drops.lpush(drop_id, record)
