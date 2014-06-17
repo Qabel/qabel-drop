@@ -190,7 +190,7 @@ def app(env, start_response):
     elif env['REQUEST_METHOD'] == 'POST':
         message = read_postbody(env)
 
-        if len(message) > MESSAGE_SIZE_LIMIT:
+        if not message or len(message) > MESSAGE_SIZE_LIMIT:
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
             return ['<h1>Bad REQUEST_METHOD</h1>']
 
