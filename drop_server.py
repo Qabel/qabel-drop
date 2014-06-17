@@ -5,7 +5,7 @@ This software is licenced under the Qabel Public Licence
 (QaPL): https://qabel.de/qapl.txt
 
 
-gevent_drop_server.py: Test server for deaddrops protocol.
+drop_server.py: Test server for deaddrops protocol.
 Uses gevent and redis-py (hiredis is recommended).
 
 Just run this for a cheap example with built-in gevent server.
@@ -25,8 +25,8 @@ Tutorial from http://gunicorn.org/
  $ cd ~/environments/drops/
  $ source bin/activate
  (drops) $ pip install pycrypto redis hiredis gevent gunicorn
- (drops) $ cp GITDIR/samples/gevent_drop_server.py .
- (drops) $ ./bin/gunicorn -w 4 gevent_drop_server:handle_request
+ (drops) $ cp GITDIR/samples/drop_server.py .
+ (drops) $ ./bin/gunicorn -w 4 drop_server:app
 
 Deploy with uWSGI and Nginx as frontend to
  - check request integrity for security
@@ -147,7 +147,7 @@ def read_postbody(env):
         return env['wsgi.input'].read()
 
 
-def handle_request(env, start_response):
+def app(env, start_response):
     drops = redis.StrictRedis(host='localhost', port=6379, db=0)
 
     drop_id = extract_drop_id(env['PATH_INFO'])
@@ -217,7 +217,7 @@ if __name__ == '__main__':
 
     # change the bind as needed and maybe enable TLS
     server = pywsgi.WSGIServer(('127.0.0.1', 6000),
-                               handle_request,
+                               app,
                                # keyfile='server.key',
                                # certfile='server.crt'
                                )
