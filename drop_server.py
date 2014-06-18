@@ -5,7 +5,7 @@ This software is licenced under the Qabel Public Licence
 (QaPL): https://qabel.de/qapl.txt
 
 
-gevent_drop_server.py: Test server for deaddrops protocol.
+drop_server.py: Test server for deaddrop protocol.
 Uses gevent and redis-py (hiredis is recommended).
 
 Just run this for a cheap example with built-in gevent server.
@@ -24,9 +24,9 @@ Tutorial from http://gunicorn.org/
  $ virtualenv ~/environments/drops/
  $ cd ~/environments/drops/
  $ source bin/activate
- (drops) $ pip install pycrypto redis hiredis gevent gunicorn
- (drops) $ cp GITDIR/samples/gevent_drop_server.py .
- (drops) $ ./bin/gunicorn -w 4 gevent_drop_server:handle_request
+ (drops) $ pip install -r GITDIR/requirements.txt
+ (drops) $ cp GITDIR/drop_server.py .
+ (drops) $ ./bin/gunicorn -w 4 drop_server:app
 
 Deploy with uWSGI and Nginx as frontend to
  - check request integrity for security
@@ -37,19 +37,15 @@ Deploy with uWSGI and Nginx as frontend to
 
 # TODO: perhaps alternative in-memory and simple disk backends
 # TODO: load and performance monitoring
-# TODO: evaluate redis monitoring:
-# https://github.com/munin-monitoring/contrib/tree/master/plugins/redis
-# https://github.com/steelThread/redmon
-# https://github.com/nkrode/RedisLive
-# https://github.com/junegunn/redis-stat
 
 from __future__ import print_function
 import redis
 import re
-from math import trunc
 from time import time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from base64 import b64encode, b64decode
+from urlparse import parse_qs
+from cgi import parse_header, parse_multipart
 from Crypto import Random
 
 MESSAGES_PER_DROP_LIMIT = 10
@@ -75,7 +71,7 @@ def check_drop_id(drop_id):
     try:
         return (len(drop_id) == 43
                 and not re.search(r'[^-_A-Za-z0-9]', drop_id)
-                and len(b64decode(drop_id + '===')) == 32)
+                and len(b64decode(drop_id + '=', '-_')) == 32)
     except TypeError:
         return False
 
@@ -86,6 +82,7 @@ def decode_record(record):
 
 
 def encode_record(timestamp, message):
+    int(timestamp)  # raise on bad argument
     return '%s:%s' % (timestamp, message)
 
 
@@ -109,19 +106,42 @@ def send_multipart(records, start_response):
 
 
 def read_postbody(env):
-    if env['CONTENT_TYPE'] == 'application/x-www-form-urlencoded':
+    if not 'CONTENT_TYPE' in env:
+        # try to get a raw body anyway
         return env['wsgi.input'].read()
+
+    elif env['CONTENT_TYPE'] == 'application/x-www-form-urlencoded':
+        # decode and split the form
+        form = parse_qs(env['wsgi.input'].read())
+        if 'text' in form:
+            # return the last value for the 'text' key if available
+            return form['text'][-1]
+        elif len(form):
+            # otherwise use a random key
+            k, v = form.popitem()
+            return v[-1]
 
     elif env['CONTENT_TYPE'] == 'application/octet-stream':
         return env['wsgi.input'].read()
 
-    elif env['CONTENT_TYPE'] == 'multipart/form-data':
-        pass  # FIXME: test this
-        #postvars = cgi.parse_multipart(env['wsgi.input'], pdict)
-        #return postvars.get('file')[0]
+    elif env['CONTENT_TYPE'].startswith('multipart/form-data'):
+        # split the multipart
+        ctype, pdict = parse_header(env['CONTENT_TYPE'])
+        postvars = parse_multipart(env['wsgi.input'], pdict)
+        if 'text' in postvars:
+            # return the data for the 'text' part if available
+            return postvars['text'][-1]
+        elif len(postvars):
+            # otherwise use a random key
+            k, v = postvars.popitem()
+            return v[-1]
+
+    else:
+        # try to get a raw body anyway
+        return env['wsgi.input'].read()
 
 
-def handle_request(env, start_response):
+def app(env, start_response):
     drops = redis.StrictRedis(host='localhost', port=6379, db=0)
 
     drop_id = extract_drop_id(env['PATH_INFO'])
@@ -169,11 +189,11 @@ def handle_request(env, start_response):
     elif env['REQUEST_METHOD'] == 'POST':
         message = read_postbody(env)
 
-        if len(message) > MESSAGE_SIZE_LIMIT:
+        if not message or len(message) > MESSAGE_SIZE_LIMIT:
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
             return ['<h1>Bad REQUEST_METHOD</h1>']
 
-        now = trunc(time())
+        now = int(time())
         record = encode_record(now, message)
         # append the message
         drops.lpush(drop_id, record)
@@ -186,18 +206,22 @@ def handle_request(env, start_response):
         return ["<b>OK</b>"]
 
 
-if __name__ == '__main__':
+def main():
     from gevent import pywsgi
 
     # change the bind as needed and maybe enable TLS
     server = pywsgi.WSGIServer(('127.0.0.1', 6000),
-                               handle_request,
+                               app,
                                # keyfile='server.key',
                                # certfile='server.crt'
                                )
 
-    print('Serving on https://127.0.0.1:6000')
+    print('Serving on http://127.0.0.1:6000')
 
     # to start the server asynchronously, use its start() method;
     # we use blocking serve_forever() here because we have no other jobs
     server.serve_forever()
+
+
+if __name__ == '__main__':
+    main()
