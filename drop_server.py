@@ -206,7 +206,7 @@ def app(env, start_response):
         return ["<b>OK</b>"]
 
 
-if __name__ == '__main__':
+def main():
     from gevent import pywsgi
 
     # change the bind as needed and maybe enable TLS
@@ -216,8 +216,12 @@ if __name__ == '__main__':
                                # certfile='server.crt'
                                )
 
-    print('Serving on https://127.0.0.1:6000')
+    print('Serving on http://127.0.0.1:6000')
 
     # to start the server asynchronously, use its start() method;
     # we use blocking serve_forever() here because we have no other jobs
     server.serve_forever()
+
+
+if __name__ == '__main__':
+    main()

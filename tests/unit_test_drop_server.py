@@ -123,3 +123,12 @@ def test_read_postbody_missing():
     env = {}  # no 'CONTENT_TYPE'
     env['wsgi.input'] = StringIO('BODY+DATA%3ATEXT')
     eq_(read_postbody(env), 'BODY+DATA%3ATEXT')
+
+
+def test_pywsgi_serve():
+    import threading
+    d = threading.Thread(target=main)
+    d.daemon = True
+    d.start()
+    d.join(1)
+    assert d.is_alive()
