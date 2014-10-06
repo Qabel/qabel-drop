@@ -49,7 +49,7 @@ from cgi import parse_header, parse_multipart
 from Crypto import Random
 
 MESSAGES_PER_DROP_LIMIT = 10
-MESSAGE_SIZE_LIMIT = 1000  # Octets
+MESSAGE_SIZE_LIMIT = 2000  # Octets
 MESSAGE_EXPIRE_TIME = 60 * 60 * 24 * 7  # Seconds
 
 
@@ -189,9 +189,13 @@ def app(env, start_response):
     elif env['REQUEST_METHOD'] == 'POST':
         message = read_postbody(env)
 
-        if not message or len(message) > MESSAGE_SIZE_LIMIT:
+        if not message:
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
             return ['<h1>Bad REQUEST_METHOD</h1>']
+
+        if len(message) > MESSAGE_SIZE_LIMIT:
+            start_response('413 Request Entity Too Large', [('Content-Type', 'text/html')])
+            return ['<h1>Request Entity Too Large</h1>']
 
         now = int(time())
         record = encode_record(now, message)
