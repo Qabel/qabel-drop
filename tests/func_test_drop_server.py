@@ -33,9 +33,9 @@ def test():
 
     # excessive body
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-             params=1024 * 'x',
+             params=2048 * 'x',
              headers={'Content-Type': 'application/octet-stream'},
-             status=400)
+             status=413)
 
     timestamp = time()
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
