@@ -89,8 +89,9 @@ def encode_record(timestamp, message):
 def send_multipart(records, start_response):
     boundary = create_boundary_id()
     start_response('200 OK', [('Content-Type',
-                               'multipart/mixed; boundary=' + boundary)])
+                               'multipart/mixed; boundary="' + boundary + '"')])
     ret = []
+    ret.append('Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n')
     for timestamp, message in records:
         ret.append('--' + boundary + '\r\n')
         # Content-Transfer-Encoding: binary
