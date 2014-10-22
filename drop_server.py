@@ -91,7 +91,6 @@ def send_multipart(records, start_response):
     start_response('200 OK', [('Content-Type',
                                'multipart/mixed; boundary="' + boundary + '"')])
     ret = []
-    ret.append('Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n')
 
     ret.append('\r\n')
     for timestamp, message in records:      
