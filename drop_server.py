@@ -92,7 +92,9 @@ def send_multipart(records, start_response):
                                'multipart/mixed; boundary="' + boundary + '"')])
     ret = []
     ret.append('Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n')
-    for timestamp, message in records:
+
+    ret.append('\r\n')
+    for timestamp, message in records:      
         ret.append('--' + boundary + '\r\n')
         # Content-Transfer-Encoding: binary
         ret.append('Content-Type: application/octet-stream\r\n')
