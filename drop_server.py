@@ -49,7 +49,10 @@ from cgi import parse_header, parse_multipart
 from Crypto import Random
 
 MESSAGES_PER_DROP_LIMIT = 10
-MESSAGE_SIZE_LIMIT = 2000  # Octets
+# Total binary message size
+# comprises header, key, payload (2KB), signature
+# see https://github.com/Qabel/qabel-doc/wiki/Qabel-Client-Drop#transport-format
+MESSAGE_SIZE_LIMIT = 2573  # Octets
 MESSAGE_EXPIRE_TIME = 60 * 60 * 24 * 7  # Seconds
 
 
