@@ -3,7 +3,7 @@ For the documentation take a look at the [wiki](https://github.com/Qabel/qabel-d
 
 # qabel-drop
 
-[![Build Status](https://travis-ci.org/zuckschwerdt/qabel-drop.svg)](https://travis-ci.org/zuckschwerdt/qabel-drop)
+[![Build Status](https://travis-ci.org/Qabel/qabel-drop.svg)](https://travis-ci.org/Qabel/qabel-drop)
 
 Qabel drop server
 
