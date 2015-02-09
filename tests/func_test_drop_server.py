@@ -22,9 +22,9 @@ def test():
     app.get('/illegal',
             status=400)
     app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-            status=404)
+            status=204)
     app.head('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-             status=404)
+             status=204)
 
     # missing body
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
