@@ -33,7 +33,7 @@ def test():
 
     # excessive body
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-             params=2048 * 'x',
+             params=2574 * 'x',
              headers={'Content-Type': 'application/octet-stream'},
              status=413)
 
