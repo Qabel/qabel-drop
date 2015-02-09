@@ -22,9 +22,9 @@ def test():
     app.get('/illegal',
             status=400)
     app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-            status=404)
+            status=204)
     app.head('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-             status=404)
+             status=204)
 
     # missing body
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
@@ -33,7 +33,7 @@ def test():
 
     # excessive body
     app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-             params=2048 * 'x',
+             params=2574 * 'x',
              headers={'Content-Type': 'application/octet-stream'},
              status=413)
 

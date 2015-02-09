@@ -163,8 +163,8 @@ def app(env, start_response):
     if env['REQUEST_METHOD'] == 'HEAD':
         record = drops.lindex(drop_id, 0)
         if not record:
-            start_response('204 No Content', [('Content-Type', 'text/html')])
-            return ['<h1>No Content</h1>']
+            start_response('204 No Content', [])
+            return []
 
         timestamp, message = decode_record(record)
 
@@ -178,8 +178,8 @@ def app(env, start_response):
     elif env['REQUEST_METHOD'] == 'GET':
         records = drops.lrange(drop_id, 0, -1)
         if not records:
-            start_response('204 Co Content', [('Content-Type', 'text/html')])
-            return ['<h1>No content</h1>']
+            start_response('204 No Content', [])
+            return []
 
         records = [decode_record(record) for record in records]
 
