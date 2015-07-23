@@ -1,7 +1,22 @@
 language: python
 python:
-  - "2.7"
-# command to install dependencies
-install: "pip install -r requirements.txt"
+  - 2.7
+#command to install dependencies
+install: 
+ - redis-server > /dev/null 2>&1 &
+ - sudo apt-get install python-pip npm nodejs
+ - sudo pip install virtualenv
+ - cd ..
+ - git clone --depth 1 https://github.com/Qabel/qabel.git
+ - cd qabel
+ - git submodule init
+ - git submodule update --depth 1
+ - rm -rf qabel-drop
+ - mv ../qabel-drop ./
+ - virtualenv qabel-drop 
+ - source qabel-drop/bin/activate 
+ - pip install -r qabel-drop/requirements.txt 
 # command to run tests
-script: nosetests
+script:
+ - nosetests
+ - ./gradlew check
