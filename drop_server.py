@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.4
 
 """
 This software is licenced under the Qabel Public Licence
@@ -19,9 +19,8 @@ Maybe use Gunicorn with gevent.pywsgi worker (-k gevent_pywsgi)
 
 Tutorial from http://gunicorn.org/
 
- $ sudo pip install virtualenv
  $ mkdir ~/environments/
- $ virtualenv ~/environments/drops/
+ $ virtualenv --python=python3.4 ~/environments/drops/
  $ cd ~/environments/drops/
  $ source bin/activate
  (drops) $ pip install -r GITDIR/requirements.txt
@@ -38,13 +37,13 @@ Deploy with uWSGI and Nginx as frontend to
 # TODO: perhaps alternative in-memory and simple disk backends
 # TODO: load and performance monitoring
 
-from __future__ import print_function
+
 import redis
 import re
 from time import time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from base64 import b64encode, b64decode
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 from cgi import parse_header, parse_multipart
 from Crypto import Random
 
@@ -59,7 +58,7 @@ MESSAGE_EXPIRE_TIME = 60 * 60 * 24 * 7  # Seconds
 def create_boundary_id():
     """Return a string of 12 randomly generated characters according to
     RFC 4648 Base 64 Encoding with URL and Filename Safe Alphabet."""
-    return b64encode(Random.new().read(9), '-_')  # no extra padding
+    return b64encode(Random.new().read(9), b'-_')  # no extra padding
 
 
 def extract_drop_id(path):
@@ -80,33 +79,41 @@ def check_drop_id(drop_id):
 
 
 def decode_record(record):
-    timestamp, message = record.split(':', 1)
+    splitter = ord(':')
+    for i in range(1, len(record)):
+        if record[i] == splitter:
+            break
+    else:
+        return ValueError('Not a valid record')
+
+    timestamp = record[:i]
+    message = record[i+1:]
     return (int(timestamp), message)
 
 
 def encode_record(timestamp, message):
     int(timestamp)  # raise on bad argument
-    return '%s:%s' % (timestamp, message)
+    return b':'.join((bytes(str(timestamp), encoding='ascii'), message))
 
 
 def send_multipart(records, start_response):
     boundary = create_boundary_id()
     start_response('200 OK', [('Content-Type',
-                               'multipart/mixed; boundary="' + boundary + '"')])
+                               'multipart/mixed; boundary="' + boundary.decode('ascii') + '"')])
     ret = []
 
-    ret.append('\r\n')
+    ret.append(b'\r\n')
     for timestamp, message in records:      
-        ret.append('--' + boundary + '\r\n')
+        ret.append(b'--' + boundary + b'\r\n')
         # Content-Transfer-Encoding: binary
-        ret.append('Content-Type: application/octet-stream\r\n')
+        ret.append(b'Content-Type: application/octet-stream\r\n')
         # format_date_time takes localtime, formats GMT
-        ret.append('Date: ' + formatdate(timestamp, False, True) + '\r\n')
+        ret.append(b'Date: ' + formatdate(timestamp, False, True).encode('ascii') + b'\r\n')
         # end headers
-        ret.append('\r\n')
+        ret.append(b'\r\n')
         ret.append(message)
-        ret.append('\r\n')
-    ret.append('--' + boundary + '--\r\n')
+        ret.append(b'\r\n')
+    ret.append(b'--' + boundary + b'--\r\n')
     return ret
 
 
@@ -152,7 +159,7 @@ def app(env, start_response):
     drop_id = extract_drop_id(env['PATH_INFO'])
     if not check_drop_id(drop_id):
         start_response('400 Bad Request', [('Content-Type', 'text/html')])
-        return ['<h1>Bad Request</h1>']
+        return [b'<h1>Bad Request</h1>']
 
     if 'HTTP_IF_MODIFIED_SINCE' in env:
         since = env['HTTP_IF_MODIFIED_SINCE']
@@ -173,7 +180,7 @@ def app(env, start_response):
             return []
 
         start_response('200 OK', [('Content-Type', 'text/html')])
-        return ['<h1>OK</h1>']
+        return [b'<h1>OK</h1>']
 
     elif env['REQUEST_METHOD'] == 'GET':
         records = drops.lrange(drop_id, 0, -1)
@@ -196,11 +203,11 @@ def app(env, start_response):
 
         if not message:
             start_response('400 Bad Request', [('Content-Type', 'text/html')])
-            return ['<h1>Bad REQUEST_METHOD</h1>']
+            return [b'<h1>Bad REQUEST_METHOD</h1>']
 
         if len(message) > MESSAGE_SIZE_LIMIT:
             start_response('413 Request Entity Too Large', [('Content-Type', 'text/html')])
-            return ['<h1>Request Entity Too Large</h1>']
+            return [b'<h1>Request Entity Too Large</h1>']
 
         now = int(time())
         record = encode_record(now, message)
@@ -212,7 +219,7 @@ def app(env, start_response):
         drops.expire(drop_id, MESSAGE_EXPIRE_TIME)
 
         start_response('200 OK', [('Content-Type', 'text/html')])
-        return ["<b>OK</b>"]
+        return [b"<b>OK</b>"]
 
 
 def main():

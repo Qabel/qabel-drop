@@ -1,10 +1,10 @@
 language: python
 python:
-  - 2.7
+  - 3.4
 #command to install dependencies
 install: 
  - redis-server > /dev/null 2>&1 &
- - sudo apt-get install python-pip npm nodejs
+ - sudo apt-get install npm nodejs
  - sudo pip install virtualenv
  - cd ..
  - git clone --depth 1 https://github.com/Qabel/qabel.git

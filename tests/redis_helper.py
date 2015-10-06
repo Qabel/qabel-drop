@@ -18,9 +18,9 @@ def startRedisServer():
         fcntl(proc.stdout, F_SETFL, flags | O_NONBLOCK)
     except:
         return False
-    outs = ''
+    outs = b''
     timeout = 5
-    while timeout > 0 and not 'ready to accept connections' in outs:
+    while timeout > 0 and not b'ready to accept connections' in outs:
         sleep(0.1)
         timeout -= 0.1
         try:
