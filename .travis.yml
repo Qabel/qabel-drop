@@ -1,11 +1,15 @@
+sudo: false
+
 language: python
 python:
-  - 2.7
-#command to install dependencies
+  - "3.4"
+
+cache: pip
+
+services:
+  - redis-server
+
 install: 
- - redis-server > /dev/null 2>&1 &
- - sudo apt-get install python-pip npm nodejs
- - sudo pip install virtualenv
  - cd ..
  - git clone --depth 1 https://github.com/Qabel/qabel.git
  - cd qabel
@@ -19,4 +23,4 @@ install:
 # command to run tests
 script:
  - nosetests
- - ./gradlew check
+ - travis_wait ./gradlew check

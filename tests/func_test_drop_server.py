@@ -17,7 +17,7 @@ def tearDownModule():
     redis_helper.stopRedisServer()
 
 
-def test():
+def test_all():
     app = TestApp(drop_server.app)
     app.get('/illegal',
             status=400)

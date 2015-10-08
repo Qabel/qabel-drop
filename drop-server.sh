@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pythonpath=$(command -v python2 || command -v python)
+pythonpath=$(command -v python3 || command -v python)
 startstopdeamon="/sbin/start-stop-daemon"
 
 start()
