@@ -17,10 +17,8 @@ install:
  - git submodule update --depth 1
  - rm -rf qabel-drop
  - mv ../qabel-drop ./
- - virtualenv qabel-drop 
- - source qabel-drop/bin/activate 
  - pip install -r qabel-drop/requirements.txt 
 # command to run tests
 script:
  - nosetests
- - travis_wait ./gradlew check
+ - ./gradlew check
