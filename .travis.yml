@@ -6,8 +6,14 @@ python:
 
 cache: pip
 
+addons:
+  postgresql: "9.3"
+
 services:
-  - redis-server
+  - postgresql
+
+notifications:
+  email: false
 
 install: 
  - cd ..
@@ -22,3 +28,6 @@ install:
 script:
  - nosetests
  - ./gradlew check
+
+before_install:
+  - cp config.py.example config.py

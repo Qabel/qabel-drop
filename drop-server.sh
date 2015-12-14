@@ -19,7 +19,7 @@ stop()
 		echo "Stopping Server ..."
 		/sbin/start-stop-daemon --stop --pidfile drop.pid --remove-pidfile
 	else
-		lsof -P | grep ':6000' | awk '{print $2}' | xargs kill  
+		lsof -P | grep ':5000' | awk '{print $2}' | xargs kill  
 	fi
 }
 
