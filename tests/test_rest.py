@@ -11,7 +11,6 @@ class DropServerTestCase(unittest.TestCase):
     def setUp(self):
         """Pre-test activities."""
         app.testing = True
-        # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         with app.app_context():
             db.init_app(current_app)
