@@ -23,7 +23,8 @@ def get_drop_messages(drop_id):
         return '', status.HTTP_204_NO_CONTENT
     if since_b:
         drops = db.session.query(Drop).filter(Drop.drop_id == drop_id, Drop.created_at >= since).all()
-        return '', status.HTTP_304_NOT_MODIFIED
+        if not drops:
+            return '', status.HTTP_304_NOT_MODIFIED
     if request.method == 'GET':
         boundary = str(uuid.uuid4())
         return Response(generate_response(drops, boundary), status=200,
