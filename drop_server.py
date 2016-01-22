@@ -1,7 +1,7 @@
-from app import app
+from views import app
+import models
 
 if __name__ == '__main__':
     # Start app
-    import views, models
     app.run()
 
