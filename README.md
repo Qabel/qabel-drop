@@ -4,7 +4,7 @@
 
 # qabel-drop
 
-[![Build Status](https://travis-ci.org/Qabel/qabel-drop.svg)](https://travis-ci.org/Qabel/qabel-drop)
+[![Build Status](https://jenkins.prae.me/job/qabel-drop-nightly/badge/icon)](https://jenkins.prae.me/job/qabel-drop-nightly/)
 
 Qabel drop server
 # Requirements
