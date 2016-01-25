@@ -1,19 +1,23 @@
-# Qabel documentation
-For the documentation take a look at the [wiki](https://github.com/Qabel/qabel-doc/wiki/Table-of-contents) in our documentation [repository](https://github.com/Qabel/qabel-doc).
+# Qabel drop documentation
+* [Drop protocol](https://qabel.github.io/docs/Qabel-Protocol-Drop/)
+* [Drop documentation](https://qabel.github.io/docs/Components-Drop/)
 
 # qabel-drop
 
 [![Build Status](https://travis-ci.org/Qabel/qabel-drop.svg)](https://travis-ci.org/Qabel/qabel-drop)
 
 Qabel drop server
+# Requirements
+* Python 3.4
+* pip
+* PostgreSQL server 9.4
+* libpq-dev
 
-## redis
-
-The server uses a redis database to store each drop as a list.
-
-You might want to monitor the redis database, here are some interessting projects:
-
-* [Munin plugin for redis](https://github.com/munin-monitoring/contrib/tree/master/plugins/redis)
-* [redmon](https://github.com/steelThread/redmon)
-* [RedisLive](https://github.com/nkrode/RedisLive)
-* [redis-stat](https://github.com/junegunn/redis-stat)
+# Installation
+* `pip install -r requirements.txt`
+* `cp config.py.example config.py`
+* Create the database and a user inside PostgreSQL
+  * `CREATE DATABASE 'qabel_drop'`
+  * `CREATE USER qabel WITH PASSWORD 'qabel_test'`
+  * `GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel`
+* You **should** change the database name, the username and the password for production, do **not** forget to change the `config.py` accordingly
