@@ -9,7 +9,7 @@ class Drop(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     drop_id = db.Column('drop_id', db.String)
     message = db.Column('message', db.LargeBinary)
-    created_at = db.Column('created_at', db.DateTime, default=datetime.datetime.utcnow())
+    created_at = db.Column('created_at', db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, drop_id, message):
         self.drop_id = drop_id
