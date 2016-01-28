@@ -45,7 +45,6 @@ class DropServerTestCase(unittest.TestCase):
 
     def test_get_messages_posted_since(self):
         dt = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(minutes=1)
-        print(format_datetime(dt, usegmt=True))
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                                 headers={'If-Modified-Since': format_datetime(dt, usegmt=True)})
 
