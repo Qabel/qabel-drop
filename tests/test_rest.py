@@ -1,6 +1,7 @@
 import datetime
 import unittest
 from email.utils import format_datetime
+import pytz
 from flask import current_app
 from flask_api import status
 from app import app, db
@@ -52,10 +53,26 @@ class DropServerTestCase(unittest.TestCase):
         print(response.data.decode())
         assert 'Hello World' in response.data.decode()
 
+    def test_get_messages_posted_since_gmt1(self):
+        dt = datetime.datetime.now(tz=pytz.timezone('Europe/Berlin')) - datetime.timedelta(minutes=1)
+        response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+                                headers={'If-Modified-Since': format_datetime(dt)})
+
+        assert response.status_code == status.HTTP_200_OK
+        print(response.data.decode())
+        assert 'Hello World' in response.data.decode()
+
     def test_get_no_messages_posted_since(self):
         dt = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(minutes=1)
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                                 headers={'If-Modified-Since': format_datetime(dt, usegmt=True)})
+        assert response.status_code == status.HTTP_304_NOT_MODIFIED
+        assert response.data == b''
+
+    def test_get_no_messages_posted_since_gmt1(self):
+        dt = datetime.datetime.now(tz=pytz.timezone('Europe/Berlin')) + datetime.timedelta(minutes=1)
+        response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+                                headers={'If-Modified-Since': format_datetime(dt)})
         assert response.status_code == status.HTTP_304_NOT_MODIFIED
         assert response.data == b''
 

@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
-from email._parseaddr import parsedate_tz
 from email.utils import formatdate
 from time import mktime
+
+import dateparser
 import re
 from base64 import b64decode
 from flask import Response, request
@@ -68,7 +69,7 @@ def generate_response(drops, boundary):
 
 def get_if_modified_since(request):
     since = request.headers.get('If-Modified-Since')
-    return (False, datetime.fromtimestamp(0)) if since is None else (True, datetime(*parsedate_tz(since)[0:7]))
+    return (False, datetime.fromtimestamp(0)) if since is None else (True, dateparser.parse(since))
 
 
 def check_drop_id(drop_id):
