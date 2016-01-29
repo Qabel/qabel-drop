@@ -46,3 +46,4 @@ docs/_build/
 # Runtime data
 pids
 *.pid
+config.py
