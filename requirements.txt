@@ -10,6 +10,7 @@ PyYAML==3.11
 SQLAlchemy==1.0.9
 Werkzeug==0.11.2
 aniso8601==1.1.0
+dateparser==0.3.2
 itsdangerous==0.24
 psycopg2==2.6.1
 py==1.4.31
