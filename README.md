@@ -14,6 +14,8 @@ Qabel drop server
 * libpq-dev
 
 # Installation
+* `virtualenv --python=python3.4 ../venv`
+* `source ../venv/bin/activate`
 * `pip install -r requirements.txt`
 * `cp config.py.example config.py`
 * Create the database and a user inside PostgreSQL
