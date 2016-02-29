@@ -110,31 +110,38 @@ class DropServerTestCase(unittest.TestCase):
     #######POST
     def test_post_empty_message(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=b'',
-                                 headers={'Content-Type': 'application/octet-stream'})
+                                 headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == b''
 
     def test_post_no_message(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
-                                 headers={'Content-Type': 'application/octet-stream'})
+                                 headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == b''
 
     def test_post_to_invalid_drop_id(self):
-        response = self.app.post('/fail', data=b'Yay', headers={'Content-Type': 'application/octet-stream'})
+        response = self.app.post('/fail', data=b'Yay',
+                                 headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == b''
 
     def test_post_message_is_too_long(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=2574 * b'x',
-                                 headers={'Content-Type': 'application/octet-stream'})
+                                 headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert response.data == b''
 
     def test_post_message(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmpost', data=b'Yay',
-                                 headers={'Content-Type': 'application/octet-stream'})
+                                 headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_200_OK
         assert response.data == b''
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmpost')
         assert 'Yay' in response.data.decode()
+
+    def test_post_message_without_headers(self):
+        response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmpost', data=b'Yay',
+                                 headers={'Content-Type': 'application/octet-stream'})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == b''
