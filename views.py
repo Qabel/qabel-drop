@@ -42,7 +42,6 @@ def post_message(drop_id):
     message = request.data
     authorization_header = request.headers.get('Authorization')
     if authorization_header != 'Client Qabel':
-        print(authorization_header)
         return '', status.HTTP_400_BAD_REQUEST
     if message == b'' or message is None:
         return '', status.HTTP_400_BAD_REQUEST
