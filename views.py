@@ -40,6 +40,9 @@ def post_message(drop_id):
         return '', status.HTTP_400_BAD_REQUEST
 
     message = request.data
+    authorization_header = request.headers.get('Authorization')
+    if authorization_header != 'Client Qabel':
+        return '', status.HTTP_400_BAD_REQUEST
     if message == b'' or message is None:
         return '', status.HTTP_400_BAD_REQUEST
     if len(message) > MESSAGE_SIZE_LIMIT:
