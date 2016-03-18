@@ -2,12 +2,14 @@ import uuid
 from datetime import datetime
 from email.utils import formatdate
 from time import mktime
+import sqlalchemy.exc
 
 import dateparser
 import re
 from base64 import b64decode
 from flask import Response, request
 from flask_api import status
+
 
 from drop_server.app import app, db
 from drop_server.backend.models import Drop
@@ -19,7 +21,7 @@ MESSAGE_SIZE_LIMIT = 2573  # Octets
 def get_drop_messages(drop_id):
     since_b, since = get_if_modified_since(request)
     if not check_drop_id(drop_id):
-        return '', status.HTTP_400_BAD_REQUEST
+        return 'Invalid drop id', status.HTTP_400_BAD_REQUEST
     drops = db.session.query(Drop).filter(Drop.drop_id == drop_id).all()
     if not drops:
         return '', status.HTTP_204_NO_CONTENT
@@ -43,16 +45,16 @@ def post_message(drop_id):
     message = request.data
     authorization_header = request.headers.get('Authorization')
     if authorization_header != 'Client Qabel':
-        return '', status.HTTP_400_BAD_REQUEST
+        return 'Bad authorization', status.HTTP_400_BAD_REQUEST
     if message == b'' or message is None:
-        return '', status.HTTP_400_BAD_REQUEST
+        return 'No message provided', status.HTTP_400_BAD_REQUEST
     if len(message) > MESSAGE_SIZE_LIMIT:
-        return '', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        return 'Message too large', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
     try:
         drop = Drop(message=message, drop_id=drop_id)
         db.session.add(drop)
         db.session.commit()
-    except Exception as e:
+    except sqlalchemy.exc.SQLAlchemyError as e:
         db.session.rollback()
         return str(e), status.HTTP_200_OK
 
