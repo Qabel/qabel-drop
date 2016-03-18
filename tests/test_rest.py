@@ -30,7 +30,7 @@ class DropServerTestCase(unittest.TestCase):
     def test_get_message_from_invalid_drop_id(self):
         response = self.app.get('/invalid')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == b''
+        assert b'Invalid drop id' == response.data
 
     def test_get_messages(self):
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo')
@@ -114,13 +114,13 @@ class DropServerTestCase(unittest.TestCase):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=b'',
                                  headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == b''
+        assert response.data == b'No message provided'
 
     def test_post_no_message(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                                  headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == b''
+        assert response.data == b'No message provided'
 
     def test_post_to_invalid_drop_id(self):
         response = self.app.post('/fail', data=b'Yay',
@@ -132,7 +132,7 @@ class DropServerTestCase(unittest.TestCase):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=2574 * b'x',
                                  headers={'Content-Type': 'application/octet-stream', 'Authorization': 'Client Qabel'})
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
-        assert response.data == b''
+        assert response.data == b'Message too large'
 
     def test_post_message(self):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmpost', data=b'Yay',
@@ -146,4 +146,4 @@ class DropServerTestCase(unittest.TestCase):
         response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmpost', data=b'Yay',
                                  headers={'Content-Type': 'application/octet-stream'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == b''
+        assert response.data == b'Bad authorization'
