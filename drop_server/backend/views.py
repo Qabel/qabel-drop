@@ -9,31 +9,46 @@ import re
 from base64 import b64decode
 from flask import Response, request
 from flask_api import status
+from time import time
+from functools import partial
 
 
 from drop_server.app import app, db
 from drop_server.backend.models import Drop
+import drop_server.backend.monitoring as mon
 
 MESSAGE_SIZE_LIMIT = 2573  # Octets
 
 
+def log_request(start_time, method, status_code):
+    time_since = time() - start_time
+    mon.REQUEST_TIME.labels({'method': method, 'status': status_code})\
+        .observe(time_since)
+
+
 @app.route('/<path:drop_id>', methods=['GET', 'HEAD'])
 def get_drop_messages(drop_id):
+    log = partial(log_request, time(), request.method)
     since_b, since = get_if_modified_since(request)
     if not check_drop_id(drop_id):
+        log(400)
         return 'Invalid drop id', status.HTTP_400_BAD_REQUEST
     drops = db.session.query(Drop).filter(Drop.drop_id == drop_id).all()
     if not drops:
+        log(204)
         return '', status.HTTP_204_NO_CONTENT
     if since_b:
         drops = db.session.query(Drop).filter(Drop.drop_id == drop_id, Drop.created_at >= since).all()
         if not drops:
+            log(304)
             return '', status.HTTP_304_NOT_MODIFIED
     if request.method == 'GET':
+        log(200)
         boundary = str(uuid.uuid4())
         return Response(generate_response(drops, boundary), status=200,
                         content_type='multipart/mixed; boundary="' + boundary + '"')
     else:
+        log(200)
         return '', status.HTTP_200_OK
 
 
