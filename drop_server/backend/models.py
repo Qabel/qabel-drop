@@ -1,6 +1,6 @@
 import datetime
 
-from app import db
+from drop_server.app import db
 
 
 class Drop(db.Model):

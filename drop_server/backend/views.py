@@ -8,8 +8,9 @@ import re
 from base64 import b64decode
 from flask import Response, request
 from flask_api import status
-from models import Drop
-from app import app, db
+
+from drop_server.app import app, db
+from drop_server.backend.models import Drop
 
 MESSAGE_SIZE_LIMIT = 2573  # Octets
 

@@ -1,4 +1,5 @@
-from views import check_drop_id
+from drop_server.backend.views import check_drop_id
+
 
 def test_check_drop_id():
     # ok

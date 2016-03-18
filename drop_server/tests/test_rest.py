@@ -1,11 +1,13 @@
 import datetime
 import unittest
 from email.utils import format_datetime
+
 import pytz
 from flask import current_app
 from flask_api import status
-from app import app, db
-from models import Drop
+
+from drop_server.app import app, db
+from drop_server.backend.models import Drop
 
 
 class DropServerTestCase(unittest.TestCase):
