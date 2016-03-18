@@ -3,25 +3,35 @@ from prometheus_client import REGISTRY
 from drop_server.app import app as flask_app, db as flask_db
 from drop_server.backend.models import Drop
 from drop_server.backend import views
+from contextlib import contextmanager
+from functools import partial
 
 
 class Registry:
-
-    @staticmethod
+    @contextmanager
     def _by_method(method, status):
-        return REGISTRY.get_sample_value('drop_request_processing_count',
-                                         {'method': method, 'status': str(status)})
+        get = partial(REGISTRY.get_sample_value,
+                      'drop_request_processing_count',
+                      {'method': method, 'status': str(status)})
+        before = get()
+        if before is None:
+            before = 0
+
+        yield
+        after = get()
+        assert after is not None, 'No request registered with status {}'.format(status)
+        assert before + 1 == after
 
     @staticmethod
-    def get_requests(status):
+    def assert_get_request(status):
         return Registry._by_method('GET', status)
 
     @staticmethod
-    def post_requests(status):
+    def assert_post_request(status):
         return Registry._by_method('POST', status)
 
     @staticmethod
-    def head_requests(status):
+    def assert_head_request(status):
         return Registry._by_method('HEAD', status)
 
 
