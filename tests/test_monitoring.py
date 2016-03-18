@@ -32,5 +32,4 @@ def test_modified_since(client, drop_messages, registry):
     response = client.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                             headers={'If-Modified-Since': format_datetime(dt, usegmt=True)})
     assert response.status_code == status.HTTP_304_NOT_MODIFIED
-    assert response.status_code == status.HTTP_304_NOT_MODIFIED
     assert registry.get_requests(304) == 1

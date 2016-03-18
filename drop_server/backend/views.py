@@ -44,6 +44,7 @@ def get_drop_messages(drop_id):
             return '', status.HTTP_304_NOT_MODIFIED
     if request.method == 'GET':
         log(200)
+        mon.DROP_SENT.inc(len(drops))
         boundary = str(uuid.uuid4())
         return Response(generate_response(drops, boundary), status=200,
                         content_type='multipart/mixed; boundary="' + boundary + '"')
@@ -54,25 +55,31 @@ def get_drop_messages(drop_id):
 
 @app.route('/<path:drop_id>', methods=['POST'])
 def post_message(drop_id):
+    log = partial(log_request, time(), request.method)
     if not check_drop_id(drop_id):
+        log(400)
         return '', status.HTTP_400_BAD_REQUEST
 
     message = request.data
     authorization_header = request.headers.get('Authorization')
     if authorization_header != 'Client Qabel':
+        log(400)
         return 'Bad authorization', status.HTTP_400_BAD_REQUEST
     if message == b'' or message is None:
+        log(400)
         return 'No message provided', status.HTTP_400_BAD_REQUEST
     if len(message) > MESSAGE_SIZE_LIMIT:
+        log(413)
         return 'Message too large', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
     try:
         drop = Drop(message=message, drop_id=drop_id)
         db.session.add(drop)
         db.session.commit()
     except sqlalchemy.exc.SQLAlchemyError as e:
+        mon.DROP_SAVE_ERROR.inc()
         db.session.rollback()
         return str(e), status.HTTP_200_OK
-
+    mon.DROP_RECEIVED.inc()
     return '', status.HTTP_200_OK
 
 
