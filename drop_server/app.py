@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 with app.app_context():
     db.init_app(current_app)
 
-if app.config['PROMETHEUS_ENABLE']:
+if app.config.get('PROMETHEUS_ENABLE', False):
     prom_adr = app.config['PROMETHEUS_ADDRESS']
     for port in app.config['PROMETHEUS_PORTS']:
         try:
