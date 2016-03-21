@@ -9,7 +9,7 @@ import prometheus_client
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object('drop_server.config')
 db = SQLAlchemy(app)
 with app.app_context():
     db.init_app(current_app)
