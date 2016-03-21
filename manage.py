@@ -1,9 +1,8 @@
 from flask import url_for
-
-from database import init_db
 from flask_script import Manager
 
-from views import app
+from drop_server.backend.database import init_db
+from drop_server.backend.views import app
 
 manager = Manager(app)
 

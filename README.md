@@ -19,7 +19,10 @@ Qabel drop server
 * `pip install -r requirements.txt`
 * `cp config.py.example config.py`
 * Create the database and a user inside PostgreSQL
-  * `CREATE DATABASE 'qabel_drop'`
-  * `CREATE USER qabel WITH PASSWORD 'qabel_test'`
-  * `GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel`
+    * `CREATE DATABASE 'qabel_drop'`
+    * `CREATE USER qabel WITH PASSWORD 'qabel_test'`
+    * `GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel`
 * You **should** change the database name, the username and the password for production, do **not** forget to change the `config.py` accordingly
+* Configure prometheus monitoring
+	* Maybe disable the prometheus metric export by setting PROMETHEUS_ENABLE = False
+	* Or configure the port range for the metrics export
