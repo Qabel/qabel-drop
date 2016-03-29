@@ -28,6 +28,7 @@ class DropServerTestCase(unittest.TestCase):
             self.app = app.test_client()
             drop = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', message=b"Hello World")
             dropfoo = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo', message=b"Bar")
+            dropfoo.created_at = datetime.datetime(year=2016, month=1, day=1, tzinfo=pytz.UTC)
             db.session.add(drop)
             db.session.add(dropfoo)
             db.session.commit()
@@ -45,6 +46,10 @@ class DropServerTestCase(unittest.TestCase):
         assert 'Hello World' in response.data.decode()
         assert response.data.decode().count("Hello World") == 1
         assert 'Bar' not in response.data.decode()
+
+    def test_get_messsages_contains_last_modified_header(self):
+        response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo')
+        assert response.headers['Last-Modified'] == "Fri, 01 Jan 2016 00:00:00 GMT"
 
     def test_get_messages_empty_drop(self):
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklempty')

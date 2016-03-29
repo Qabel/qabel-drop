@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from email.utils import formatdate
 from time import mktime
 import sqlalchemy.exc
@@ -51,8 +51,11 @@ def get_drop_messages(drop_id):
         log(status.HTTP_200_OK)
         mon.DROP_SENT.inc(len(drops))
         boundary = str(uuid.uuid4())
-        return Response(generate_response(drops, boundary), status=200,
-                        content_type='multipart/mixed; boundary="' + boundary + '"')
+        response = Response(generate_response(drops, boundary), status=200,
+                            content_type='multipart/mixed; boundary="' + boundary + '"')
+        if drops:
+            set_last_modified(response, drops[-1].created_at)
+        return response
     else:
         log(status.HTTP_200_OK)
         return '', status.HTTP_200_OK
@@ -105,6 +108,10 @@ def generate_response(drops, boundary):
 def get_if_modified_since(request):
     since = request.headers.get('If-Modified-Since')
     return (False, datetime.fromtimestamp(0)) if since is None else (True, dateparser.parse(since))
+
+
+def set_last_modified(response, modificationDate):
+    response.headers['Last-Modified'] = modificationDate.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
 
 def check_drop_id(drop_id):
