@@ -32,7 +32,7 @@ Qabel consists of multiple Projects:
 # Requirements
 * Python 3.4
 * pip
-* PostgreSQL server 9.4
+* PostgreSQL server 9.5
 * libpq-dev
 
 # Installation
