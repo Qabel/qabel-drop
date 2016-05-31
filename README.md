@@ -48,3 +48,10 @@ Qabel consists of multiple Projects:
 * Configure prometheus monitoring
 	* Maybe disable the prometheus metric export by setting PROMETHEUS_ENABLE = False
 	* Or configure the port range for the metrics export
+
+# Build
+after setting up and activating the virtualenv, go to tests and run py.test
+```BASH
+cd tests
+py.test
+```
