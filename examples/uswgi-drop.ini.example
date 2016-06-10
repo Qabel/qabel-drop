@@ -1,0 +1,12 @@
+[uwsgi]
+wsgi-file = drop_server.py
+callable = app
+socket = /tmp/qabel-drop-uwsgi.sock
+chmod-socket = 666
+vacuum = true
+processes = 4
+master = true
+die-on-term = true
+plugins = python3
+home = /home/ubuntu/qabel/drop/venv/
+chdir = /home/ubuntu/qabel/drop/qabel-drop/
