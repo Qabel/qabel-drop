@@ -51,3 +51,7 @@ after setting up and activating the virtualenv, go to tests and run py.test
 cd tests
 py.test
 ```
+
+# Run
+We recommend uwsgi emperor. See uwsgi emperor documentation: http://uwsgi-docs.readthedocs.io/en/latest/Emperor.html
+Adapt examples/uswgi-drop.ini.example and copy it to your uwsgi emperor vassals folder.
