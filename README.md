@@ -53,5 +53,6 @@ py.test
 ```
 
 # Run
-We recommend uwsgi emperor. See uwsgi emperor documentation: http://uwsgi-docs.readthedocs.io/en/latest/Emperor.html
-Adapt examples/uswgi-drop.ini.example and copy it to your uwsgi emperor vassals folder.
+* We recommend uwsgi emperor. See uwsgi emperor documentation: http://uwsgi-docs.readthedocs.io/en/latest/Emperor.html
+* Adapt examples/uswgi-drop.ini.example and copy it to your uwsgi emperor vassals folder.
+* (Optional) use a webserver of your choice as a proxy (we recommend nginx) if you use a uwsgi UNIX socket.
