@@ -27,20 +27,19 @@ Qabel consists of multiple Projects:
  * [Qabel Block Server](https://github.com/Qabel/qabel-block) serves as the storage backend according to the [Qabel Box Protocol](http://qabel.github.io/docs/Qabel-Protocol-Box/)
 
 # Requirements
-* Python 3.4
-* pip
-* PostgreSQL server 9.4
-* libpq-dev
+* Python 3.5 (+virtualenv)
+* PostgreSQL server 9.5
+* libpq-dev (Ubuntu)
 
 # Installation
-* `virtualenv --python=python3.4 ../venv`
+* `virtualenv --python=python3.5 ../venv`
 * `source ../venv/bin/activate`
 * `pip install -r requirements.txt`
-* `cp config.py.example config.py`
+* `cp drop_server/config.py.example drop_server/config.py`
 * Create the database and a user inside PostgreSQL
-    * `CREATE DATABASE 'qabel_drop'`
-    * `CREATE USER qabel WITH PASSWORD 'qabel_test'`
-    * `GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel`
+  * ```CREATE DATABASE 'qabel_drop'```
+  * ```CREATE USER qabel WITH PASSWORD 'qabel_test'```
+  * ```GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel```
 * You **should** change the database name, the username and the password for production, do **not** forget to change the `config.py` accordingly
 * Configure prometheus monitoring
 	* Maybe disable the prometheus metric export by setting PROMETHEUS_ENABLE = False
