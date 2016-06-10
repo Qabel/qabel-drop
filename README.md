@@ -41,11 +41,12 @@ Qabel consists of multiple Projects:
   * ```CREATE USER qabel WITH PASSWORD 'qabel_test'```
   * ```GRANT ALL PRIVILEGES ON DATABASE qabel_drop TO qabel```
 * You **should** change the database name, the username and the password for production, do **not** forget to change the `config.py` accordingly
+* Run `python manage.py create_db` to initialize the database
 * Configure prometheus monitoring
 	* Maybe disable the prometheus metric export by setting PROMETHEUS_ENABLE = False
 	* Or configure the port range for the metrics export
 
-# Build
+# Test
 after setting up and activating the virtualenv, go to tests and run py.test
 ```BASH
 cd tests
