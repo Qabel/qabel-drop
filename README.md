@@ -5,9 +5,6 @@
 <img align="left" width="0" height="150px" hspace="25"/>
 > The Qabel Drop Server
 
-[![Build Status](https://jenkins.prae.me/buildStatus/icon?job=qabel-drop-nightly)](https://jenkins.prae.me/job/qabel-drop-nightly/)
-[![version](https://img.shields.io/badge/beta-dev-blue.svg)](https://qabel.de)
-
 This project provides the drop server for <a href="https://qabel.de"><img alt="Qabel" src="https://files.qabel.de/img/qabel-kl.png" height="18px"/></a> that manages Qabel-Accounts that authorize Qabel Box usage according to the [Qabel Box Protocol](http://qabel.github.io/docs/Qabel-Protocol-Box/).
 
 <br style="clear: both"/>
