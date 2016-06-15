@@ -1,0 +1,70 @@
+<project name="qabel-drop" basedir="." default="build">
+    <property name="dblog" value="/tmp/postgresql.5433.log"/>
+    <property name="dbdir" value="/tmp/postgresqldata.5433"/>
+    <condition property="dbdir.exists"><available file="${dbdir}" type="dir"/></condition>
+    <condition property="dblog.exists"><available file="${dblog}" type="file"/></condition>
+    <condition property="clean-db.required"><or><available file="${dbdir}" type="dir"/><available file="${dblog}" type="file"/></or></condition>
+
+    <target name="build" depends="install">
+        <antcall target="test"/>
+    </target>
+
+    <target name="clean" depends="clean-db,clean-virtualenv"/>
+
+    <target name="clean-db" if="clean-db.required" depends="clean-dbdir,clean-dblog"/>
+    <target name="clean-dbdir" if="${dbdir.exists}">
+        <delete dir="${dbdir}"/>
+    </target>
+    <target name="clean-dblog" if="${dblog.exists}">
+        <delete file="${dblog}"/>
+    </target>
+
+    <property name="virtualenv" value="${basedir}/venv"/>
+    <property name="vbin" value="${virtualenv}/bin"/>
+    <condition property="virtualenv.exists"><available file="${virtualenv}" type="dir"/></condition>
+    <target name="clean-virtualenv" if="virtualenv.exists">
+        <exec executable="rm" dir="${basedir}" failonerror="true">
+            <arg value="-r"/>
+            <arg value="${virtualenv}"/>
+        </exec>
+        <property name="virtualenv.exists" value="false"/>
+    </target>
+    <target name="create-virtualenv">
+        <exec executable="virtualenv" failonerror="true">
+            <arg value="${virtualenv}"/>
+            <arg value="--python=python3.5"/>
+            <arg value="--no-site-packages"/>
+        </exec>
+    </target>
+    <target name="virtualenv" depends="create-virtualenv">
+        <exec executable="${vbin}/pip" failonerror="true">
+            <arg value="install"/>
+            <arg value="--upgrade"/>
+            <arg value="pip"/>
+            <arg value="setuptools"/>
+            <arg value="wheel"/>
+        </exec>
+    </target>
+    <target name="install" depends="virtualenv">
+        <exec executable="${vbin}/pip" failonerror="true">
+            <arg value="install"/>
+            <arg value="-U"/>
+            <arg value="-r"/>
+            <arg value="requirements.txt"/>
+        </exec>
+    </target>
+    
+    <target name="test-config">
+        <copy   file="${basedir}/drop_server/config.py.test"
+                tofile="${basedir}/drop_server/config.py"
+                overwrite="true"/>
+    </target>
+    <target name="test" depends="install,clean-db,test-config">
+        <exec executable="${vbin}/py.test" dir="${basedir}/tests" failonerror="true">
+            <arg value="--junitxml=${basedir}/junit.xml"/>
+            <arg value="-v"/>
+            <arg value="--exitfirst"/>
+            <arg value="--ff"/>
+        </exec>
+    </target>
+</project>
