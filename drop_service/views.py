@@ -105,5 +105,5 @@ class DropView(View):
             yield (b'--' + boundary + b'\r\n')
             yield (b'Content-Type: application/octet-stream\r\n')
             yield (b'Date: ' + date + b'\r\n\r\n')
-            yield (drop.message + b'\r\n')
+            yield (bytes(drop.message) + b'\r\n')
         yield (b'--' + boundary + b'--\r\n')
