@@ -81,14 +81,7 @@ class DropView(View):
         if len(message) > settings.MESSAGE_SIZE_LIMIT:
             log(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
             return error('Message too large', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
-        try:
-            drop = Drop(message=message, drop_id=drop_id)
-            drop.save()
-        except DatabaseError as e:
-            # Let Django handle that?
-            monitoring.DROP_SAVE_ERROR.inc()
-            log(status.HTTP_500_INTERNAL_SERVER_ERROR)
-            return error(str(e), status.HTTP_500_INTERNAL_SERVER_ERROR)
+        Drop.objects.create(message=message, drop_id=drop_id)
         log(status.HTTP_200_OK)
         return HttpResponse()
 
