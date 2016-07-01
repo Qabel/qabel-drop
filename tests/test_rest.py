@@ -2,6 +2,7 @@ import datetime
 from email.utils import format_datetime
 from json import loads
 
+from django.conf import settings
 from django.test import Client, TestCase
 
 from rest_framework import status
@@ -128,7 +129,8 @@ class DropServerTestCase(TestCase):
         assert err(response.content) == 'Invalid drop id'
 
     def test_post_message_is_too_long(self):
-        response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=2574 * b'x',
+        too_long = settings.MESSAGE_SIZE_LIMIT + 1
+        response = self.app.post('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', data=too_long * b'x',
                                  content_type='application/octet-stream',
                                  HTTP_AUTHORIZATION='Client Qabel')
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
