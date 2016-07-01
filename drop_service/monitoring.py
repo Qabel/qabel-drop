@@ -1,5 +1,4 @@
 from prometheus_client import Summary, Counter
-import threading
 
 REQUEST_TIME = Summary('drop_request_processing',
                        'Time spent processing request', ['status', 'method'])
@@ -12,12 +11,3 @@ DROP_SENT = Counter('drop_messages_delivered',
 
 DROP_RECEIVED = Counter('drop_messages_received',
                         'Amount of received drop messages')
-
-
-class PrometheusEndpointServer(threading.Thread):
-    def __init__(self, httpd, *args, **kwargs):
-        self.httpd = httpd
-        super().__init__(*args, **kwargs)
-
-    def run(self):
-        self.httpd.serve_forever()

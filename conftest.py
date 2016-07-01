@@ -1,10 +1,14 @@
-import pytest
-from prometheus_client import REGISTRY
-from drop_server.app import app as flask_app, db as flask_db
-from drop_server.backend.models import Drop
-from drop_server.backend import views
+import datetime
 from contextlib import contextmanager
 from functools import partial
+
+import pytz
+
+import pytest
+
+from prometheus_client import REGISTRY
+
+from drop_service.models import Drop
 
 
 class Registry:
@@ -40,28 +44,11 @@ def registry():
     return Registry
 
 
-@pytest.fixture(scope='session')
-def app():
-    app = flask_app
-    app.testing = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    return app
-
-
 @pytest.fixture
-def db(app):
-    with app.app_context():
-        flask_db.init_app(app)
-        flask_db.metadata.create_all(flask_db.engine)
-    return flask_db
-
-
-@pytest.fixture
-def drop_messages(app, db):
-    with app.app_context():
-        drop = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', message=b"Hello World")
-        dropfoo = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo', message=b"Bar")
-        db.session.add(drop)
-        db.session.add(dropfoo)
-        db.session.commit()
-        return [drop, dropfoo]
+def drop_messages(db):
+    drop = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', message=b"Hello World")
+    dropfoo = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo', message=b"Bar")
+    dropfoo.created_at = datetime.datetime(year=2016, month=1, day=1, tzinfo=pytz.UTC)
+    drop.save()
+    dropfoo.save()
+    return drop, dropfoo
