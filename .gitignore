@@ -50,3 +50,6 @@ config.py
 
 .idea
 *.sqlite3
+trees
+deployed
+activate.sh
