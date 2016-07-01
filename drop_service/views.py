@@ -7,10 +7,11 @@ from time import time, mktime
 
 import dateparser
 
-from django.db import DatabaseError
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotModified
 from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from rest_framework import status
 
@@ -30,6 +31,10 @@ def error(msg, status=status.HTTP_400_BAD_REQUEST):
 
 class DropView(View):
     http_method_names = ['get', 'head', 'post']
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, drop_id):
         log = partial(log_request, time(), request.method)
