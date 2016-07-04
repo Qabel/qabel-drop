@@ -70,6 +70,7 @@ class DropView(View):
         if len(message) > settings.MESSAGE_SIZE_LIMIT:
             return error('Message too large', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
         Drop.objects.create(message=message, drop_id=drop_id)
+        monitoring.DROP_RECEIVED.inc()
         return HttpResponse()
 
     def get_if_modified_since(self):
