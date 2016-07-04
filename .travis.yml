@@ -1,0 +1,33 @@
+sudo: false
+
+language: python
+python:
+  - "3.4"
+
+cache: pip
+
+addons:
+  postgresql: "9.3"
+
+services:
+  - postgresql
+
+notifications:
+  email: false
+
+install: 
+ - cd ..
+ - git clone --depth 1 https://github.com/Qabel/qabel.git
+ - cd qabel
+ - git submodule init
+ - git submodule update --depth 1
+ - rm -rf qabel-drop
+ - mv ../qabel-drop ./
+ - pip install -r qabel-drop/requirements.txt 
+# command to run tests
+script:
+ - nosetests
+ - ./gradlew check
+
+before_install:
+  - cp config.py.example config.py

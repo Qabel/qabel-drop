@@ -1,5 +1,0 @@
-name: drop
-class: tasks_django.Django
-wsgi_app: qabel_drop.wsgi:application
-settings_prelude:
-    from qabel_drop.settings import *
