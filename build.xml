@@ -39,6 +39,7 @@
     <target name="virtualenv" depends="create-virtualenv">
         <exec executable="${vbin}/pip" failonerror="true">
             <arg value="install"/>
+            <arg value="--quiet"/>
             <arg value="--upgrade"/>
             <arg value="pip"/>
             <arg value="setuptools"/>
@@ -48,18 +49,13 @@
     <target name="install" depends="virtualenv">
         <exec executable="${vbin}/pip" failonerror="true">
             <arg value="install"/>
-            <arg value="-U"/>
+            <arg value="--quiet"/>
+            <arg value="--upgrade"/>
             <arg value="-r"/>
             <arg value="requirements.txt"/>
         </exec>
     </target>
-    
-    <target name="test-config">
-        <copy   file="${basedir}/drop_server/config.py.test"
-                tofile="${basedir}/drop_server/config.py"
-                overwrite="true"/>
-    </target>
-    <target name="test" depends="install,clean-db,test-config">
+    <target name="test" depends="install,clean-db">
         <exec executable="${vbin}/py.test" dir="${basedir}/tests" failonerror="true">
             <arg value="--junitxml=${basedir}/junit.xml"/>
             <arg value="-v"/>

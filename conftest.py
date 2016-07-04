@@ -1,38 +1,32 @@
-import pytest
-from prometheus_client import REGISTRY
-from drop_server.app import app as flask_app, db as flask_db
-from drop_server.backend.models import Drop
-from drop_server.backend import views
+import datetime
 from contextlib import contextmanager
 from functools import partial
+
+import pytz
+
+import pytest
+
+from prometheus_client import REGISTRY
+
+from drop_service.models import Drop
 
 
 class Registry:
     @contextmanager
-    def _by_method(method, status):
-        get = partial(REGISTRY.get_sample_value,
-                      'drop_request_processing_count',
-                      {'method': method, 'status': str(status)})
-        before = get()
-        if before is None:
-            before = 0
-
+    def _assert_sample_delta(counter, count):
+        get = partial(REGISTRY.get_sample_value, counter)
+        before = get() or 0
         yield
-        after = get()
-        assert after is not None, 'No request registered with status {}'.format(status)
-        assert before + 1 == after
+        after = get() or 0
+        assert before + count == after
 
     @staticmethod
-    def assert_get_request(status):
-        return Registry._by_method('GET', status)
+    def assert_drop_sent(count=1):
+        return Registry._assert_sample_delta('drop_messages_delivered', count)
 
     @staticmethod
-    def assert_post_request(status):
-        return Registry._by_method('POST', status)
-
-    @staticmethod
-    def assert_head_request(status):
-        return Registry._by_method('HEAD', status)
+    def assert_drop_received(count=1):
+        return Registry._assert_sample_delta('drop_messages_received', count)
 
 
 @pytest.fixture
@@ -40,28 +34,11 @@ def registry():
     return Registry
 
 
-@pytest.fixture(scope='session')
-def app():
-    app = flask_app
-    app.testing = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    return app
-
-
 @pytest.fixture
-def db(app):
-    with app.app_context():
-        flask_db.init_app(app)
-        flask_db.metadata.create_all(flask_db.engine)
-    return flask_db
-
-
-@pytest.fixture
-def drop_messages(app, db):
-    with app.app_context():
-        drop = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', message=b"Hello World")
-        dropfoo = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo', message=b"Bar")
-        db.session.add(drop)
-        db.session.add(dropfoo)
-        db.session.commit()
-        return [drop, dropfoo]
+def drop_messages(db):
+    drop = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo', message=b"Hello World")
+    dropfoo = Drop(drop_id='abcdefghijklmnopqrstuvwxyzabcdefghijklmnfoo', message=b"Bar")
+    dropfoo.created_at = datetime.datetime(year=2016, month=1, day=1, tzinfo=pytz.UTC)
+    drop.save()
+    dropfoo.save()
+    return drop, dropfoo
