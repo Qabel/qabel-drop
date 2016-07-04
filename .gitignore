@@ -53,3 +53,4 @@ config.py
 trees
 deployed
 activate.sh
+_venv
