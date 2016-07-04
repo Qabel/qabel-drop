@@ -48,7 +48,7 @@ class DropView(View):
         return None, drops
 
     def get(self, request, drop_id):
-        response, drops = self._get_drops(request, drop_id)
+        response, drops = self._get_drops(drop_id)
         if response:
             return response
 
@@ -62,7 +62,7 @@ class DropView(View):
         return response
 
     def head(self, request, drop_id):
-        response, _ = self._get_drops(request, drop_id)
+        response, _ = self._get_drops(drop_id)
         return response or HttpResponse()
 
     def post(self, request, drop_id):
