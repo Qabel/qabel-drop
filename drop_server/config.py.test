@@ -1,0 +1,6 @@
+import locale
+from sqlalchemy.engine.url import URL
+
+DEVELOPMENT = True
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
