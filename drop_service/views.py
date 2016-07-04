@@ -30,31 +30,40 @@ class DropView(View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, drop_id):
+    def _get_drops(self, drop_id):
+        """Return (response, drops) for a request. response are errors and no-content/not-modified, otherwise None."""
         if not check_drop_id(drop_id):
-            return error('Invalid drop id')
+            return error('Invalid drop id'), None
 
         drops = Drop.objects.filter(drop_id=drop_id)
         if not drops:
-            return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+            return HttpResponse(status=status.HTTP_204_NO_CONTENT), None
 
         have_since, since = self.get_if_modified_since()
         if have_since:
             drops = drops.filter(created_at__gt=since)
             if not drops:
-                return HttpResponseNotModified()
+                return HttpResponseNotModified(), None
 
-        if request.method == 'GET':
-            monitoring.DROP_SENT.inc(len(drops))
-            boundary = str(uuid.uuid4())
-            content_type = 'multipart/mixed; boundary="{boundary}"'.format(boundary=boundary)
-            body = self.generate_body(drops, boundary)
-            response = HttpResponse(body, content_type=content_type)
-            if drops:
-                set_last_modified(response, drops.latest().created_at)
+        return None, drops
+
+    def get(self, request, drop_id):
+        response, drops = self._get_drops(request, drop_id)
+        if response:
             return response
-        else:
-            return HttpResponse()
+
+        monitoring.DROP_SENT.inc(len(drops))
+        boundary = str(uuid.uuid4())
+        content_type = 'multipart/mixed; boundary="{boundary}"'.format(boundary=boundary)
+        body = self.generate_body(drops, boundary)
+        response = HttpResponse(body, content_type=content_type)
+        if drops:
+            set_last_modified(response, drops.latest().created_at)
+        return response
+
+    def head(self, request, drop_id):
+        response, _ = self._get_drops(request, drop_id)
+        return response or HttpResponse()
 
     def post(self, request, drop_id):
         if not check_drop_id(drop_id):
