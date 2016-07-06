@@ -47,3 +47,10 @@ docs/_build/
 pids
 *.pid
 config.py
+
+.idea
+*.sqlite3
+trees
+deployed
+activate.sh
+_venv
