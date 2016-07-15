@@ -1,5 +1,6 @@
 
 import base64
+import datetime
 import re
 
 
@@ -18,3 +19,8 @@ def check_drop_id(drop_id):
 
 def set_last_modified(response, modification_date):
     response['Last-Modified'] = modification_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+
+def utc_timestamp(datetime_obj):
+    """Return float UTC timestamp for *datetime_obj*."""
+    return datetime_obj.replace(tzinfo=datetime.timezone.utc).timestamp()
