@@ -28,6 +28,9 @@ def get_notificators():
 
 
 class FCM:
+    """
+    Publish drops through FCM topic messages. The topic is the drop ID.
+    """
     SERVICE = 'fcm'
     _logger = logger.getChild('fcm')
 
