@@ -34,8 +34,10 @@ class FCM:
     SERVICE = 'fcm'
     _logger = logger.getChild('fcm')
 
-    def __init__(self):
-        self._push = FCMNotification(api_key=settings.FCM_API_KEY, proxy_dict=settings.FCM_PROXY)
+    def __init__(self, fcm_notification=None):
+        if not fcm_notification:
+            fcm_notification = FCMNotification(api_key=settings.FCM_API_KEY, proxy_dict=settings.FCM_PROXY)
+        self._push = fcm_notification
 
     def notify(self, drop):
         data = {
