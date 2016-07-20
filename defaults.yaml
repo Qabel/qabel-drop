@@ -5,6 +5,15 @@ qabel:
           - '*'
         SECRET_KEY: '=tmcici-p92_^_jih9ud11#+wb7*i21firlrtcqh$p+d7o*49@'
 
+        # Push notifications:
+
+        PUSH_NOTIFICATORS:
+          - drop_service.notify.FCM
+            # Any errors will be logged to the drop_service.notify.fcm logger
+
+        # Note: doesn't work
+        # - drop_service.notify.WebSocket
+
         # Note: valid FCM_API_KEY required for drop_service.notify.FCM
         # If there is none, disable it.
         FCM_API_KEY: '<put your API key into site-local configuration>'
@@ -12,11 +21,6 @@ qabel:
         # To proxy the FCM API requests through a HTTP proxy set this to a python-requests-compatible value.
         # See http://docs.python-requests.org/en/master/api/#requests.Session.proxies
         FCM_PROXY: ~
-
-        PUSH_NOTIFICATORS:
-          - drop_service.notify.FCM
-        # Note: doesn't work
-        # - drop_service.notify.WebSocket
 
         DATABASES:
             default:

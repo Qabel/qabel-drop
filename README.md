@@ -97,6 +97,23 @@ qabel:
         CSRF_COOKIE_HTTPONLY: true
         X_FRAME_OPTIONS: DENY
 
+        # Push notifications:
+
+        PUSH_NOTIFICATORS:
+          - drop_service.notify.FCM
+            # Any errors will be logged to the drop_service.notify.fcm logger
+
+        # Note: doesn't work
+        # - drop_service.notify.WebSocket
+
+        # Note: valid FCM_API_KEY required for drop_service.notify.FCM
+        # If there is none, disable it.
+        FCM_API_KEY: '<put your API key into site-local configuration>'
+
+        # To proxy the FCM API requests through a HTTP proxy set this to a python-requests-compatible value.
+        # See http://docs.python-requests.org/en/master/api/#requests.Session.proxies
+        FCM_PROXY: ~
+
         ALLOWED_HOSTS:
           - qabel-drop.example.net
 
@@ -145,6 +162,28 @@ Done. If a bad commit is deployed roll it back:
 
 There is also support for multiple concurrent deployments for e.g. blue/green deployments: `inv deploy --into green`
 would deploy the application into `deployed/green/uwsgi.ini`.
+
+## Push notifications
+
+Support for push notifications is available for Firebase Cloud Messaging (FCM). New drop messages
+are posted via topic data messages to `/topic/<drop-id>`. Topic subscription is handled solely by FCM.
+The data messages have the following structure:
+
+    {
+        'drop-id': STR drop_id,
+        'message': STR base64(message),
+    }
+
+Note that unlike drop IDs which are encoded in URL-friendly base64 (RFC 4648 section 5, see
+[drop specification](http://qabel.github.io/docs/Qabel-Protocol-Drop/)) the message is encoded
+in standard base64.
+
+Naturally using FCM requires obtaining a proper API key from Google. Operation without push notifications,
+or no notifications at all is possible and does not require an API key:
+
+    qabel:
+        drop:
+            PUSH_NOTIFICATORS: []
 
 # Running the tests
 
