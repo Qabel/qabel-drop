@@ -28,13 +28,6 @@ qabel:
                 NAME: qabel-drop
                 USER: qabel-drop
 
-        # Redis is used for IPC
-        WS4REDIS_CONNECTION:
-            host: localhost
-            port: 6379
-            db: 0
-            password: ''
-
         uwsgi:
             http-socket: :5000
             enable-threads: yes

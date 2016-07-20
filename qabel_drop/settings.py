@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_prometheus',
-    'ws4redis',
     'drop_service',
 ]
 
@@ -101,9 +100,6 @@ APPEND_SLASH = False
 
 # Size limit (in octets/bytes) of a drop message
 MESSAGE_SIZE_LIMIT = 2573
-
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_PREFIX = 'drop-ws'
 
 FCM_API_KEY = '<your API key here>'
 FCM_PROXY = None
