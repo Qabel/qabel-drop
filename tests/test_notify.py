@@ -3,7 +3,6 @@ from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import MagicMock
 
 from pyfcm import FCMNotification
-from pyfcm.errors import AuthenticationError
 
 from drop_service.notify import FCM
 
