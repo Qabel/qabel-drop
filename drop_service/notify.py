@@ -58,7 +58,7 @@ class FCM:
                 self._push.notify_topic_subscribers(topic_name=drop.drop_id, data_message=data)
             except (AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError) as exc:
                 monitor_labels['exception'] = type(exc).__name__
-                self._logger.exception('notify_topic_subscribes API exception')
+                self._logger.exception('notify_topic_subscribers API exception')
 
 
 class WebSocket:
