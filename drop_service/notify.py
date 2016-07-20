@@ -11,7 +11,7 @@ from ws4redis.redis_store import RedisMessage
 from pyfcm import FCMNotification
 from pyfcm.errors import AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError
 
-from .monitoring import FCM_CALLS
+from .monitoring import FCM_CALLS, FCM_DURATION, monitor_duration
 from .util import CsrfExemptView
 
 
@@ -47,7 +47,8 @@ class FCM:
         try:
             # The response contains no useful data for topic messages
             # Downstream messages on the other hand include success/failure counts
-            self._push.notify_topic_subscribers(topic_name=drop.drop_id, data_message=data)
+            with monitor_duration(FCM_DURATION):
+                self._push.notify_topic_subscribers(topic_name=drop.drop_id, data_message=data)
         except (AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError) as exc:
             FCM_CALLS.labels({'exception': type(exc).__name__}).inc()
             self._logger.exception('notify_topic_subscribes API exception')
