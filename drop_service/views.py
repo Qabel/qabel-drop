@@ -1,3 +1,4 @@
+import datetime
 import json
 import uuid
 from email.utils import formatdate
@@ -13,7 +14,7 @@ from rest_framework import status
 from . import monitoring
 from .models import Drop
 from .notify import get_notificators
-from .util import CsrfExemptView, check_drop_id, set_last_modified
+from .util import CsrfExemptView, check_drop_id, set_last_modified, utc_timestamp
 
 
 def error(msg, status=status.HTTP_400_BAD_REQUEST):
@@ -33,11 +34,15 @@ class DropView(CsrfExemptView):
         if not drops:
             return HttpResponse(status=status.HTTP_204_NO_CONTENT), None
 
-        have_since, since = self.get_if_modified_since()
+        try:
+            have_since, since = self.get_if_modified_since()
+        except ValueError as value_error:
+            return error(str(value_error)), None
+
         if have_since:
             drops = drops.filter(created_at__gt=since)
-            if not drops:
-                return HttpResponseNotModified(), None
+        if have_since and not drops:
+            return HttpResponseNotModified(), None
 
         return None, drops
 
@@ -52,7 +57,7 @@ class DropView(CsrfExemptView):
         body = self.generate_body(drops, boundary)
         response = HttpResponse(body, content_type=content_type)
         if drops:
-            set_last_modified(response, drops.latest().created_at)
+            self.set_latest(response, drops.latest())
         return response
 
     def head(self, request, drop_id):
@@ -78,11 +83,21 @@ class DropView(CsrfExemptView):
         return HttpResponse()
 
     def get_if_modified_since(self):
-        since = self.request.META.get('HTTP_IF_MODIFIED_SINCE')
-        if since:
-            return True, dateparser.parse(since)
+        coarse_since = self.request.META.get('HTTP_IF_MODIFIED_SINCE')
+        finest_since = self.request.META.get('HTTP_X_QABEL_NEW_SINCE')
+        if coarse_since and finest_since:
+            raise ValueError('Specify only one of X-Qabel-New-Since, If-Modified-Since')
+        if coarse_since:
+            return True, dateparser.parse(coarse_since)
+        elif finest_since:
+            return True, datetime.datetime.fromtimestamp(float(finest_since), datetime.timezone.utc)
         else:
             return False, None
+
+    def set_latest(self, response, latest_drop):
+        set_last_modified(response, latest_drop.created_at)
+        timestamp = utc_timestamp(latest_drop.created_at)
+        response['X-Qabel-Latest'] = str(timestamp)
 
     @staticmethod
     def generate_body(drops, boundary):
