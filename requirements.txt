@@ -10,8 +10,5 @@ djangorestframework==3.3.3
 pytest-django==2.9.1
 invoke==0.13.0
 pprintpp==0.2.3
-#django-websocket-redis==0.4.6
-#git+https://github.com/jrief/django-websocket-redis@0a6406d170cc1
-# with some fixes:
-/home/mabe/Projekte/_oss/django-websocket-redis
+django-websocket-redis==0.4.6
 pyfcm==1.0.0
