@@ -2,6 +2,10 @@
 import base64
 import re
 
+from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 
 def check_drop_id(drop_id):
     """
@@ -18,3 +22,9 @@ def check_drop_id(drop_id):
 
 def set_last_modified(response, modification_date):
     response['Last-Modified'] = modification_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+
+class CsrfExemptView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)

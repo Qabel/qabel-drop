@@ -21,3 +21,13 @@ class Drop(ExportModelOperationsMixin('Drop'), models.Model):
 
     def __repr__(self):
         return u'<{0} for {1} created at {2} >'.format(self.drop_id, self.message, self.created_at)
+
+
+class PushSubscription(ExportModelOperationsMixin('PushSubscription'), models.Model):
+    SERVICES = (
+        ('fcm', 'Firebase Cloud Messaging'),
+    )
+
+    service = models.CharField(max_length=20, choices=SERVICES)
+    device_id = models.CharField(max_length=100)
+    drop_id = models.CharField(max_length=43)

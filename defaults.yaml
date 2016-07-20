@@ -4,11 +4,24 @@ qabel:
         ALLOWED_HOSTS:
           - '*'
         SECRET_KEY: '=tmcici-p92_^_jih9ud11#+wb7*i21firlrtcqh$p+d7o*49@'
+
         DATABASES:
             default:
                 ENGINE: django.db.backends.postgresql
                 NAME: qabel-drop
                 USER: qabel-drop
+
+        # Redis is used for IPC
+        WS4REDIS_CONNECTION:
+            host: localhost
+            port: 6379
+            db: 0
+            password: ''
+
         uwsgi:
+            # processes × gevent (asyncores) is the absolute limiting value on the number of open web sockets
             processes: 2
+            gevent: 1000
+            gevent-monkey-patch: yes
             http-socket: :5000
+            http-websockets: yes

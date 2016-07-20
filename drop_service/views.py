@@ -1,4 +1,3 @@
-
 import json
 import uuid
 from email.utils import formatdate
@@ -8,27 +7,22 @@ import dateparser
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotModified
-from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 
 from rest_framework import status
 
 from . import monitoring
 from .models import Drop
-from .util import check_drop_id, set_last_modified
+from .notify import get_notificators
+from .util import CsrfExemptView, check_drop_id, set_last_modified
 
 
 def error(msg, status=status.HTTP_400_BAD_REQUEST):
     return HttpResponse(json.dumps({'error': msg}), status=status)
 
 
-class DropView(View):
+class DropView(CsrfExemptView):
     http_method_names = ['get', 'head', 'post']
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    notificators = get_notificators()
 
     def _get_drops(self, drop_id):
         """Return (response, drops) for a request. response are errors and no-content/not-modified, otherwise None."""
@@ -78,7 +72,8 @@ class DropView(View):
             return error('No message provided')
         if len(message) > settings.MESSAGE_SIZE_LIMIT:
             return error('Message too large', status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
-        Drop.objects.create(message=message, drop_id=drop_id)
+        drop = Drop.objects.create(message=message, drop_id=drop_id)
+        self.notify(drop)
         monitoring.DROP_RECEIVED.inc()
         return HttpResponse()
 
@@ -99,3 +94,7 @@ class DropView(View):
             yield (b'Date: ' + date + b'\r\n\r\n')
             yield (bytes(drop.message) + b'\r\n')
         yield (b'--' + boundary + b'--\r\n')
+
+    def notify(self, drop):
+        for notificator in self.notificators:
+            notificator.notify(drop)
