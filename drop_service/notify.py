@@ -12,7 +12,6 @@ from pyfcm import FCMNotification
 from pyfcm.errors import AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError
 
 from .monitoring import FCM_CALLS
-from .models import PushSubscription
 from .util import CsrfExemptView
 
 
