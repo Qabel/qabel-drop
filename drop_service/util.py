@@ -2,6 +2,7 @@
 import base64
 import datetime
 import re
+from concurrent.futures import Future
 
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
@@ -34,3 +35,14 @@ class CsrfExemptView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+
+class SynchronousExecutor:
+    def submit(self, callable, *args, **kwargs):
+        future = Future()
+        future.set_running_or_notify_cancel()  # synchronous, can't be canceled
+        try:
+            future.set_result(callable(*args, **kwargs))
+        except Exception as exc:
+            future.set_exception(exc)
+        return future

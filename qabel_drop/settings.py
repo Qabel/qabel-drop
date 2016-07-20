@@ -108,7 +108,4 @@ WS4REDIS_PREFIX = 'drop-ws'
 FCM_API_KEY = '<your API key here>'
 FCM_PROXY = None
 
-PUSH_NOTIFICATORS = (
-    'drop_service.notify.FCM',
-#   'drop_service.notify.WebSocket',
-)
+PUSH_NOTIFICATORS = []

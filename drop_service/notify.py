@@ -1,5 +1,6 @@
 import base64
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 
 from django.conf import settings
@@ -34,12 +35,16 @@ class FCM:
     SERVICE = 'fcm'
     _logger = logger.getChild('fcm')
 
-    def __init__(self, fcm_notification=None):
+    def __init__(self, fcm_notification=None, executor=None):
         if not fcm_notification:
             fcm_notification = FCMNotification(api_key=settings.FCM_API_KEY, proxy_dict=settings.FCM_PROXY)
+        self._executor = executor or ThreadPoolExecutor()
         self._push = fcm_notification
 
     def notify(self, drop):
+        self._executor.submit(self._notify, drop)
+
+    def _notify(self, drop):
         data = {
             'drop-id': drop.drop_id,
             'message': base64.b64encode(drop.message).decode(),
