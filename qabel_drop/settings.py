@@ -106,9 +106,6 @@ WEBSOCKET_URL = '/ws/'
 WS4REDIS_PREFIX = 'drop-ws'
 
 FCM_API_KEY = '<your API key here>'
-
-# To proxy the FCM API requests through a HTTP proxy set this to a python-requests-compatible value.
-# See http://docs.python-requests.org/en/master/api/#requests.Session.proxies
 FCM_PROXY = None
 
 PUSH_NOTIFICATORS = (
