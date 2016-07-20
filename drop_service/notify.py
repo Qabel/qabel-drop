@@ -11,7 +11,7 @@ from ws4redis.redis_store import RedisMessage
 from pyfcm import FCMNotification
 from pyfcm.errors import AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError
 
-from .monitoring import FCM_CALLS, FCM_DURATION, monitor_duration
+from .monitoring import FCM_API, monitor_duration
 from .util import CsrfExemptView
 
 
@@ -44,16 +44,14 @@ class FCM:
         }
         # Alphabet of topics: [a-zA-Z0-9-_.~%]
         # Alphabet of drop IDs: [a-zA-Z0-9-_]
-        try:
-            # The response contains no useful data for topic messages
-            # Downstream messages on the other hand include success/failure counts
-            with monitor_duration(FCM_DURATION):
+        with monitor_duration(FCM_API, exception='None') as monitor_labels:
+            try:
+                # The response contains no useful data for topic messages
+                # Downstream messages on the other hand include success/failure counts
                 self._push.notify_topic_subscribers(topic_name=drop.drop_id, data_message=data)
-        except (AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError) as exc:
-            FCM_CALLS.labels({'exception': type(exc).__name__}).inc()
-            self._logger.exception('notify_topic_subscribes API exception')
-        else:
-            FCM_CALLS.labels({'exception': 'None'}).inc()
+            except (AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError) as exc:
+                monitor_labels['exception'] = type(exc).__name__
+                self._logger.exception('notify_topic_subscribes API exception')
 
 
 class WebSocket:
