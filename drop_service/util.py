@@ -3,6 +3,10 @@ import base64
 import datetime
 import re
 
+from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 
 def check_drop_id(drop_id):
     """
@@ -24,3 +28,9 @@ def set_last_modified(response, modification_date):
 def utc_timestamp(datetime_obj):
     """Return float UTC timestamp for *datetime_obj*."""
     return datetime_obj.replace(tzinfo=datetime.timezone.utc).timestamp()
+
+
+class CsrfExemptView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)

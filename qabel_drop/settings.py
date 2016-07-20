@@ -100,3 +100,8 @@ APPEND_SLASH = False
 
 # Size limit (in octets/bytes) of a drop message
 MESSAGE_SIZE_LIMIT = 2573
+
+FCM_API_KEY = '<your API key here>'
+FCM_PROXY = None
+
+PUSH_NOTIFICATORS = []
