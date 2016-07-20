@@ -103,9 +103,6 @@ qabel:
           - drop_service.notify.FCM
             # Any errors will be logged to the drop_service.notify.fcm logger
 
-        # Note: doesn't work
-        # - drop_service.notify.WebSocket
-
         # Note: valid FCM_API_KEY required for drop_service.notify.FCM
         # If there is none, disable it.
         FCM_API_KEY: '<put your API key into site-local configuration>'
