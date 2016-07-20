@@ -33,3 +33,4 @@ qabel:
 
         uwsgi:
             http-socket: :5000
+            enable-threads: yes
