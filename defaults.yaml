@@ -19,9 +19,4 @@ qabel:
             password: ''
 
         uwsgi:
-            # processes × gevent (asyncores) is the absolute limiting value on the number of open web sockets
-            processes: 2
-            gevent: 1000
-            gevent-monkey-patch: yes
             http-socket: :5000
-            http-websockets: yes

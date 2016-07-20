@@ -113,5 +113,5 @@ FCM_PROXY = None
 
 PUSH_NOTIFICATORS = (
     'drop_service.notify.FCM',
-    'drop_service.notify.WebSocket',
+#   'drop_service.notify.WebSocket',
 )
