@@ -37,7 +37,7 @@ def create_virtualenv(tree, virtualenvs):
         run('{py} -m pip install -qr {reqs}'.format(py=shared_virtualenv / 'bin' / 'python3',
                                                     reqs=tree / 'requirements.txt'))
         # Make the virtualenv relocatable to allow symlinking to it
-        run('virtualenv -q --relocatable {venv}'.format(venv=shared_virtualenv))
+        run('virtualenv -q --python=python3 --relocatable {venv}'.format(venv=shared_virtualenv))
     virtualenv = tree / '_venv'
     virtualenv.symlink_to(shared_virtualenv.absolute())
 
