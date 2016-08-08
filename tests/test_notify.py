@@ -16,7 +16,6 @@ def test_fcm_basic(drop_messages):
         fcm.notify(drop1)
 
     data_message = {
-        'message': 'SGVsbG8gV29ybGQ=',
         'drop-id': 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo'
     }
     api.notify_topic_subscribers.assert_called_once_with(topic_name=drop1.drop_id, data_message=data_message)
