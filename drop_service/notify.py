@@ -41,7 +41,7 @@ class FCM:
     def _notify(self, drop):
         data = {
             'drop-id': drop.drop_id,
-            'message': base64.b64encode(drop.message).decode(),
+        #    'message': base64.b64encode(drop.message).decode(),
         }
         # Alphabet of topics: [a-zA-Z0-9-_.~%]
         # Alphabet of drop IDs: [a-zA-Z0-9-_]
