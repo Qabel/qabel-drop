@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import uuid
 from email.utils import formatdate
 from time import mktime
@@ -15,6 +16,8 @@ from . import monitoring
 from .models import Drop
 from .notify import get_notificators
 from .util import CsrfExemptView, check_drop_id, set_last_modified, utc_timestamp
+
+logger = logging.getLogger(__name__)
 
 
 def error(msg, status=status.HTTP_400_BAD_REQUEST):
@@ -37,7 +40,12 @@ class DropView(CsrfExemptView):
         try:
             have_since, since = self.get_if_modified_since()
         except ValueError as value_error:
-            return error(str(value_error)), None
+            logger.warning('Could not parse modified-since header pack: %s', value_error)
+            have_since, since = False, None
+
+        if have_since and not since:
+            logger.warning('Invalid If-Modified-Since header')
+            have_since = False
 
         if have_since:
             drops = drops.filter(created_at__gt=since)

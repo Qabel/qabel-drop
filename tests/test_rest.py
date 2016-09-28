@@ -59,6 +59,14 @@ class DropServerTestCase(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert 'Hello World' in response.content.decode()
 
+    def test_get_messages_posted_since_invalid(self):
+        dt = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(minutes=1)
+        response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+                                HTTP_IF_MODIFIED_SINCE='warghabl')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert 'Hello World' in response.content.decode()
+
     def test_get_messages_posted_since_qabel(self):
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
                                 HTTP_X_QABEL_NEW_SINCE=str(utc_timestamp(self.dropfoo.created_at)))
@@ -67,6 +75,16 @@ class DropServerTestCase(TestCase):
         body = response.content.decode()
         assert 'Hello World' in body
         assert 'Bar' not in body
+
+    def test_get_messages_posted_since_qabel_invalid(self):
+        response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo',
+                                HTTP_X_QABEL_NEW_SINCE='warghabl')
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.content.decode()
+        assert 'Hello World' in body
+        assert 'Bar' not in body
+
 
     def test_get_qabel_round_trip(self):
         response = self.app.get('/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopo')
