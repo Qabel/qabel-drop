@@ -43,10 +43,6 @@ class DropView(CsrfExemptView):
             logger.warning('Could not parse modified-since header pack: %s', value_error)
             have_since, since = False, None
 
-        if have_since and not since:
-            logger.warning('Invalid If-Modified-Since header')
-            have_since = False
-
         if have_since:
             drops = drops.filter(created_at__gt=since)
         if have_since and not drops:
@@ -96,7 +92,10 @@ class DropView(CsrfExemptView):
         if coarse_since and finest_since:
             raise ValueError('Specify only one of X-Qabel-New-Since, If-Modified-Since')
         if coarse_since:
-            return True, dateparser.parse(coarse_since)
+            since = dateparser.parse(coarse_since)
+            if not since:
+                raise ValueError('Unable to parse If-Modified-Since')
+            return True, since
         elif finest_since:
             return True, datetime.datetime.fromtimestamp(float(finest_since), datetime.timezone.utc)
         else:
