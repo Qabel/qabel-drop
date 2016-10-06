@@ -5,7 +5,7 @@
 <img align="left" width="0" height="150px" hspace="25"/>
 > The Qabel Drop Server
 
-This project provides the drop server for <a href="https://qabel.de"><img alt="Qabel" src="https://files.qabel.de/img/qabel-kl.png" height="18px"/></a> that manages Qabel-Accounts that authorize Qabel Box usage according to the [Qabel Box Protocol](http://qabel.github.io/docs/Qabel-Protocol-Box/).
+This project provides the drop server for <a href="https://qabel.de"><img alt="Qabel" src="https://files.qabel.de/img/qabel-kl.png" height="18px"/></a> that manages message exchange according to the [Qabel Drop Protocol](http://qabel.github.io/docs/Qabel-Protocol-Drop/).
 
 <br style="clear: both"/>
 <br style="clear: both"/>
