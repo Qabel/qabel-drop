@@ -17,7 +17,7 @@ class Drop(ExportModelOperationsMixin('Drop'), models.Model):
     class Meta:
         # Force un-prefixed table name for compatibility
         db_table = 'drops'
-        get_latest_by = 'created_at'
+        ordering = ['created_at']
 
     def __repr__(self):
         return u'<{0} for {1} created at {2} >'.format(self.drop_id, self.message, self.created_at)

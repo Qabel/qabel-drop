@@ -34,8 +34,6 @@ class DropView(CsrfExemptView):
             return error('Invalid drop id'), None
 
         drops = Drop.objects.filter(drop_id=drop_id)
-        if not drops:
-            return HttpResponse(status=status.HTTP_204_NO_CONTENT), None
 
         try:
             have_since, since = self.get_if_modified_since()
@@ -45,8 +43,13 @@ class DropView(CsrfExemptView):
 
         if have_since:
             drops = drops.filter(created_at__gt=since)
-        if have_since and not drops:
-            return HttpResponseNotModified(), None
+
+        drops = list(drops)
+        if not drops:
+            if have_since:
+                return HttpResponseNotModified(), None
+            else:
+                return HttpResponse(status=status.HTTP_204_NO_CONTENT), None
 
         return None, drops
 
@@ -61,7 +64,7 @@ class DropView(CsrfExemptView):
         body = self.generate_body(drops, boundary)
         response = HttpResponse(body, content_type=content_type)
         if drops:
-            self.set_latest(response, drops.latest())
+            self.set_latest(response, drops[-1])
         return response
 
     def head(self, request, drop_id):
