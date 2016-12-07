@@ -44,14 +44,14 @@ class DropView(CsrfExemptView):
         if have_since:
             drops = drops.filter(created_at__gt=since)
 
-        drops = list(drops)
-        if not drops:
+
+        if not drops.exists():
             if have_since:
                 return HttpResponseNotModified(), None
             else:
                 return HttpResponse(status=status.HTTP_204_NO_CONTENT), None
 
-        return None, drops
+        return None, list(drops)
 
     def get(self, request, drop_id):
         response, drops = self._get_drops(drop_id)
