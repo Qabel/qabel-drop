@@ -47,14 +47,11 @@ def application(env, start_response):
     websocket_fd = uwsgi.connection_fd()
     redis_fd = channel.connection._sock.fileno()
 
-    print('wsfd/rfd', websocket_fd, redis_fd)
-
     monitoring.WEBSOCKET_CONNECTIONS.inc()
 
     try:
         while True:
             rable, wable, xfd = gevent.select.select([websocket_fd, redis_fd], [], [], 2)
-            print('selected', rable)
             if not rable:
                 # When the select times out, we do a non-blocking receive. This triggers a check
                 # in uWSGI whether a PING should be send. It also handles various housekeeping
