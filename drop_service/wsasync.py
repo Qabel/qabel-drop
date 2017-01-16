@@ -29,7 +29,7 @@ def application(env, start_response):
     if 'HTTP_SEC_WEBSOCKET_KEY' not in env:
         return bad('Missing Sec-WebSocket-Key header')
 
-    match = uri_re.fullmatch(env['REQUEST_URI'])
+    match = uri_re.fullmatch(env['PATH_INFO'])
     if not match:
         return bad('Invalid/missing drop ID')
 

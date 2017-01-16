@@ -20,7 +20,7 @@ try:
     _django_application = get_wsgi_application()
 
     def application(env, start_response):
-        if uri_re.fullmatch(env['REQUEST_URI']):
+        if uri_re.fullmatch(env['PATH_INFO']):
             return _ws_application(env, start_response)
         return _django_application(env, start_response)
 
