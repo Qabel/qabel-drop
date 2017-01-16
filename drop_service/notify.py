@@ -11,6 +11,7 @@ from pyfcm.errors import AuthenticationError, FCMServerError, InvalidDataError, 
 import redis
 
 from .monitoring import FCM_API, monitor_duration
+from .util import utc_timestamp
 
 logger = logging.getLogger('drop_service.notify')
 
@@ -63,4 +64,12 @@ class Redis:
         self._prefix = settings.REDIS_PREFIX
 
     def notify(self, drop):
-        self._redis.publish(self._prefix + drop.drop_id, drop.message)
+        headers = [
+            'X-Qabel-Latest: ' + str(utc_timestamp(drop.created_at)),
+            'Last-Modified: ' + drop.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        ]
+        data = []
+        data.append('\n'.join(headers).encode())
+        data.append(b'\n\n')
+        data.append(drop.message)
+        self._redis.publish(self._prefix + drop.drop_id, b''.join(data))
