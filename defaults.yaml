@@ -10,6 +10,7 @@ qabel:
         PUSH_NOTIFICATORS:
           - drop_service.notify.FCM
             # Any errors will be logged to the drop_service.notify.fcm logger
+          - drop_service.notify.Redis
 
         # Note: valid FCM_API_KEY required for drop_service.notify.FCM
         # If there is none, disable it.
@@ -18,6 +19,14 @@ qabel:
         # To proxy the FCM API requests through a HTTP proxy set this to a python-requests-compatible value.
         # See http://docs.python-requests.org/en/master/api/#requests.Session.proxies
         FCM_PROXY: ~
+
+        # This redis instance will only be used for pubsub, and only iff the drop_service.notify.Redis
+        # notificator is enabled.
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        # Since pubsub uses a global channel namespace a prefix makes sense.
+        # The server uses {prefix}{drop ID} for the channels.
+        REDIS_PREFIX: drop-
 
         DATABASES:
             default:
@@ -28,3 +37,4 @@ qabel:
         uwsgi:
             http-socket: :5000
             enable-threads: yes
+            gevent: 100
