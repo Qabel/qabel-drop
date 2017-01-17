@@ -17,6 +17,12 @@ from . import monitoring
 
 uri_re = re.compile(r'^/(?P<drop_id>[-_A-Za-z0-9]+)/ws$')
 
+redis_pool = redis.ConnectionPool(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+
+
+def get_redis(**redis_kwargs):
+    return redis.StrictRedis(connection_pool=redis_pool, **redis_kwargs)
+
 
 def application(env, start_response):
     # At this point the server received a valid WebSocket Upgrade request,
@@ -40,7 +46,7 @@ def application(env, start_response):
     # output socket).
     uwsgi.websocket_handshake(env['HTTP_SEC_WEBSOCKET_KEY'], env.get('HTTP_ORIGIN', ''))
 
-    redis_conn = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+    redis_conn = get_redis()
     channel = redis_conn.pubsub()
     channel.subscribe(settings.REDIS_PREFIX + drop_id)
 
@@ -74,7 +80,4 @@ def application(env, start_response):
                     monitoring.WEBSOCKET_MESSAGES.inc()
     finally:
         monitoring.WEBSOCKET_CONNECTIONS.dec()
-        try:
-            redis_conn.connection_pool.disconnect()
-        except:
-            pass
+        channel.close()
