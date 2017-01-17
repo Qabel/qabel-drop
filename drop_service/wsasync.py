@@ -78,6 +78,11 @@ def application(env, start_response):
                         continue
                     uwsgi.websocket_send_binary(msg['data'])
                     monitoring.WEBSOCKET_MESSAGES.inc()
+    except OSError as ose:
+        if str(ose) == 'unable to receive websocket message':  # regular end of connection, nothing we want a trace for.
+            pass
+        else:
+            raise
     finally:
         monitoring.WEBSOCKET_CONNECTIONS.dec()
         channel.close()
