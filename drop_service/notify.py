@@ -8,7 +8,10 @@ from django.utils.module_loading import import_string
 from pyfcm import FCMNotification
 from pyfcm.errors import AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError
 
+import redis
+
 from .monitoring import FCM_API, monitor_duration
+from .util import utc_timestamp
 
 logger = logging.getLogger('drop_service.notify')
 
@@ -53,3 +56,20 @@ class FCM:
             except (AuthenticationError, FCMServerError, InvalidDataError, InternalPackageError) as exc:
                 monitor_labels['exception'] = type(exc).__name__
                 self._logger.exception('notify_topic_subscribers API exception')
+
+
+class Redis:
+    def __init__(self):
+        self._redis = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+        self._prefix = settings.REDIS_PREFIX
+
+    def notify(self, drop):
+        headers = [
+            'X-Qabel-Latest: ' + str(utc_timestamp(drop.created_at)),
+            'Last-Modified: ' + drop.created_at.strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        ]
+        data = []
+        data.append('\n'.join(headers).encode())
+        data.append(b'\n\n')
+        data.append(drop.message)
+        self._redis.publish(self._prefix + drop.drop_id, b''.join(data))

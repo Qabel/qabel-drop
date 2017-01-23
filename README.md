@@ -31,6 +31,7 @@ Qabel consists of multiple Projects:
 * Python 3.5 (+virtualenv)
 * PostgreSQL server 9.5
 * libpq-dev (Ubuntu)
+* Redis, if you want WebSockets
 
 # Installation
 

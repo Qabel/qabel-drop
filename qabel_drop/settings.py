@@ -105,3 +105,7 @@ FCM_API_KEY = '<your API key here>'
 FCM_PROXY = None
 
 PUSH_NOTIFICATORS = []
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_PREFIX = 'drop-'
