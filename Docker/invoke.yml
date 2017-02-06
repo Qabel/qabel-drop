@@ -1,0 +1,19 @@
+qabel:
+    drop:
+        DEBUG: False
+        ALLOWED_HOSTS:
+          - '*'
+        SECRET_KEY: totalysecretkeychangethistosomethingsaneploxkthxbye!
+        DATABASES:
+            default:
+                ENGINE: django.db.backends.postgresql
+                NAME: drop-example
+                USER: postgres 
+                PASSWORD: 'test'
+                HOST: postgres
+                PORT: 5432
+
+        uwsgi:
+            processes: 4
+            http-socket: :4233
+
