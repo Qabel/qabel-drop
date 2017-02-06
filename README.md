@@ -186,3 +186,10 @@ or no notifications at all is possible and does not require an API key:
 # Running the tests
 
 `$ py.test` (that's it)
+
+# Run it using Docker!!1!
+
+1. Clone this Repository
+2. Change Docker/invoke.yml according to your needs
+3. run Docker build
+4. Run the Container
