@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  drop:
+    build:
+      context: .
+      dockerfile: ./compose/local/drop/Dockerfile
+    image: docker.qabel.de/qabel-drop-dev
+    env_file:
+      - ./.envs/.local/.drop
+      - ./.envs/.local/.postgres
+    command: /start

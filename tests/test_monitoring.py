@@ -2,6 +2,7 @@
 import datetime
 from email.utils import format_datetime
 
+from prometheus_client.exposition import generate_latest
 from rest_framework import status
 
 

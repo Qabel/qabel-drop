@@ -1,0 +1,45 @@
+version: '3'
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_traefik: {}
+
+services:
+  drop:
+    build:
+      context: .
+      dockerfile: ./compose/production/drop/Dockerfile
+    image: docker.qabel.de/qabel-drop
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.drop
+      - ./.envs/.production/.postgres
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: docker.qabel.de/qabel-postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  nginx:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+      - drop
+    ports:
+      - "0.0.0.0:80:80"
+
+  redis:
+    image: redis:5.0

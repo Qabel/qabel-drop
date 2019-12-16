@@ -22,11 +22,11 @@ class Registry:
 
     @staticmethod
     def assert_drop_sent(count=1):
-        return Registry._assert_sample_delta('drop_messages_delivered', count)
+        return Registry._assert_sample_delta('drop_messages_delivered_total', count)
 
     @staticmethod
     def assert_drop_received(count=1):
-        return Registry._assert_sample_delta('drop_messages_received', count)
+        return Registry._assert_sample_delta('drop_messages_received_total', count)
 
 
 @pytest.fixture

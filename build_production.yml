@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  drop:
+    build:
+      context: .
+      dockerfile: ./compose/production/drop/Dockerfile
+    image: docker.qabel.de/qabel-drop
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: docker.qabel.de/qabel-postgres

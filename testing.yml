@@ -1,0 +1,12 @@
+version: "3.0"
+services:
+  drop:
+    command:
+    - "pytest"
+    - "--teamcity"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONIOENCODING: "UTF-8"
+      PYTEST_RUN_CONFIG: "True"
+      PYTHONDONTWRITEBYTECODE: "1"
+    stdin_open: true

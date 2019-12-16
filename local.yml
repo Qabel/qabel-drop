@@ -1,0 +1,32 @@
+version: '3'
+
+
+services:
+  drop:
+    build:
+      context: .
+      dockerfile: ./compose/local/drop/Dockerfile
+    image: qabel_drop_local_drop
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/.local/.drop
+      - ./.envs/.local/.postgres
+      - ./.envs/.local/.redis
+    ports:
+      - "5000:8000"
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: qabel_drop_production_postgres
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:5.0
+
