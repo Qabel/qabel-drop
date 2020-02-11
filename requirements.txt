@@ -4,7 +4,7 @@ pytest==2.8.3
 python-dateutil==2.4.2
 pytz==2015.7
 prometheus-client==0.0.13
-django==1.9.7
+django==1.11.28
 django-prometheus==1.0.6
 djangorestframework==3.3.3
 pytest-django==2.9.1
