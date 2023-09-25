@@ -13,4 +13,4 @@ pprintpp==0.2.3
 pyfcm==1.0.2
 redis==4.4.4
 hiredis==0.2.0
-gevent==1.2.1
+gevent==23.9.1
